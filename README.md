@@ -44,7 +44,7 @@
 # Process Plan
 
 * ~~Week 1 布置题目~~
-* Week 2 提交分组信息
+* ~~Week 2 提交分组信息~~
 * Week 3 讲解题目
 * Week 4 提交项目计划
 * Week 5 中期检查
