@@ -65,7 +65,7 @@
 * 用户使用说明
 
 # Reference
-
+* [疑似是以前学长做的](https://www.write-bug.com/article/1888.html)
 * [Efficient Point-to-Point Shortest
 Path Algorithms](http://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/EPP%20shortest%20path%20algorithms.pdf)
 * [A* 搜索算法有哪些变种？
