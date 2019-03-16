@@ -45,8 +45,8 @@
 
 * ~~Week 1 布置题目~~
 * ~~Week 2 提交分组信息~~
-* Week 3 讲解题目
-* Week 4 提交项目计划
+* ~~Week 3 讲解题目~~
+* ~~Week 4 提交项目计划~~
 * Week 5 中期检查
 * Week 15, 16 验收
 * Every Week 发周报到邮箱 zhyprj@sina.com
