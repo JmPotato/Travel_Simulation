@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2019-03-16T09:38:23
+# Project created by QtCreator 2019-03-17T15:45:15
 #
 #-------------------------------------------------
 
@@ -30,6 +30,9 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h
+
+FORMS += \
+        mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
