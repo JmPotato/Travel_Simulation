@@ -1,0 +1,25 @@
+#ifndef _GRAPH_H_
+#define _GRAPH_H_
+#include <string>
+
+#define MaxInt 32767
+
+//图类的定义
+class Graph 
+{
+private：
+    string vexs[12];              //顶点表
+    int matrix[12][12];           //邻接矩阵
+	int vexnum                    //定点数
+public：
+	Graph();                      //构造函数
+	int locateVex(string city); 
+	void ShortestPath_DIJ();
+	int getValue(string city1,string city2);
+	void setValue(string city1,string city2,int value);
+};
+
+#endif //GRAPH_H
+
+//采用带权有向网，每条边的权值是钱或者价格，
+//因为是稠密图（边数比较多），所若采用邻接表存储图，空间复杂度较高（O(n+e)）。所以宜采用邻接矩阵来存储图
