@@ -27,14 +27,16 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    Strategy.cpp
+    Strategy.cpp \
+    Tourist.cpp
 
 HEADERS += \
         mainwindow.h \
     Strategy.h \
     Time.h \
     Result.h \
-    Path.h
+    Path.h \
+    Tourist.h
 
 FORMS += \
         mainwindow.ui
