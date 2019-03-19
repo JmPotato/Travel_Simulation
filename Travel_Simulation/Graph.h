@@ -8,11 +8,12 @@
 class Graph 
 {
 private：
-    string vexs[12];              //顶点表
-    int matrix[12][12];           //邻接矩阵
-	int vexnum                    //定点数
+    vector<string> vexs;              //顶点表
+    int **matrix;                     //邻接矩阵
+	int vexnum                        //顶点数
 public：
-	Graph();                      //构造函数
+	Graph(int cityNum);                      //构造函数,参数是城市的数量
+	~Graph();
 	int locateVex(string city); 
 	void ShortestPath_DIJ();
 	int getValue(string city1,string city2);

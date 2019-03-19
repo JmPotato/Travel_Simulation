@@ -1,11 +1,16 @@
 #include "Graph.h"
 
 //成员函数的实现
-Graph::Graph()
+Graph::Graph(int cityNum)
 {
 	string v1,v2;       //两个城市
 	int w;              //权值（时间或价格）
-	vexnum=12;
+	vexnum=cityNum;
+	
+	//动态申请内存
+	matrix = new int*[vexnum];
+	for(int i=0;i<vexnum;i++)
+		matrix[i] = new int[vexnum];
 	
 	//均初始化为极大值MaxInt
 	for(int i=0;i<vexnum;i++)
@@ -23,6 +28,13 @@ Graph::Graph()
 	}		
 }
 
+//析构函数，释放内存
+Graph::~Graph()
+{
+	for(int i=0;i<vexnum;i++)
+		delete[] matrix[i];
+	delete[] matrix;
+}
 int Graph::locateVex(string city)
 {
 	int index;
