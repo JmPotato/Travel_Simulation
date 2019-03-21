@@ -1,7 +1,7 @@
 #ifndef TOURIST_H
 #define TOURIST_H
 
-#include "Time.h"
+#include "MyTime.h"
 #include "Strategy.h"
 
 #include <string>

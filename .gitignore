@@ -34,3 +34,6 @@
 
 # Qt
 *.user
+
+# Debug File
+/build-Travel_Simulation-Desktop_Qt_5_12_0_clang_64bit-Debug/

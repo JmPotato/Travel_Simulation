@@ -2,7 +2,7 @@
 #define RESULT_H
 
 #include <vector>
-#include "Time.h"
+#include "MyTime.h"
 #include "Path.h"
 
 using std::vector;

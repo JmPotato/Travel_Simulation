@@ -30,29 +30,19 @@ SOURCES += \
     Strategy.cpp \
     Tourist.cpp \
     Graph.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    Strategy.cpp \
-    Tourist.cpp
 
 HEADERS += \
         mainwindow.h \
     Strategy.h \
-    Time.h \
     Result.h \
     Path.h \
     Tourist.h \
     Graph.h \
-    mainwindow.h \
-    Path.h \
-    Result.h \
-    Strategy.h \
-    Time.h \
-    Tourist.h
+    MyTime.h
 
 FORMS += \
         mainwindow.ui \
-    mainwindow.ui
+   # mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

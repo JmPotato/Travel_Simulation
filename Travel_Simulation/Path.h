@@ -2,7 +2,7 @@
 #define PATH_H
 
 #include <string>
-#include "Time.h"
+#include "MyTime.h"
 
 using std::string;
 
