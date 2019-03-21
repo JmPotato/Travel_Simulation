@@ -12,15 +12,16 @@ class Graph
 private:
     vector<string> vexs;              //顶点表
     int **matrix;                     //邻接矩阵
-    int vexnum;                        //顶点数
+    unsigned long vexnum;                        //顶点数
 public:
-	Graph(int cityNum);                      //构造函数,参数是城市的数量
+    Graph(unsigned long cityNum);                      //构造函数,参数是城市的数量
 	~Graph();
     long locateVex(string city);
 	void ShortestPath_DIJ();
     int getValue(string city1,string city2);
     void setValue(string city1,string city2,int value);
     void setVexsList(vector<string> list);
+    void printMatrix();
 };
 
 #endif //GRAPH_H

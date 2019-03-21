@@ -1,4 +1,5 @@
 #include "Strategy.h"
+#include "Graph.h"
 #include <iostream>
 #include <set>
 #include <QtSql>
@@ -57,6 +58,27 @@ void Strategy::cheapestStrategy()
     }
     cout << std::endl << cityList.end() - cityList.begin() << endl;
 
+    Graph G(cityList.size());
+    G.setVexsList(cityList);
+
+    vector<string>::iterator i, j;
+    int value;
+    QString select;
+    for (i = cityList.begin(); i != cityList.end(); i++)
+        for (j = cityList.begin(); j != cityList.end(); j++) {
+            if (*i == *j)
+                G.setValue(*i, *j, 0);
+            else {
+                QString s1 = QString::fromStdString(*i);
+                QString s2 = QString::fromStdString(*j);
+                select = QString("select * from time_table where Dep='%1' and Dest='%2' order by Price asc limit 1").arg(s1).arg(s2);
+                query.exec(select);
+                query.first();
+                value = query.value("Price").toInt();
+                G.setValue(*i, *j, value);
+            }
+        }
+     G.printMatrix();
 }
 
 void Strategy::fastestStrategy()
