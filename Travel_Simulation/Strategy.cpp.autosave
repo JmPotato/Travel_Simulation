@@ -26,5 +26,7 @@ void Strategy::startStrategy()
 
 void Strategy::cheapestStrategy()
 {
-
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("")
 }

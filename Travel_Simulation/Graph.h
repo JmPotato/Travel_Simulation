@@ -18,8 +18,9 @@ public:
 	~Graph();
     long locateVex(string city);
 	void ShortestPath_DIJ();
-	int getValue(string city1,string city2);
-	void setValue(string city1,string city2,int value);
+    int getValue(string city1,string city2);
+    void setValue(string city1,string city2,int value);
+    void setVexsList(vector<string> list);
 };
 
 #endif //GRAPH_H

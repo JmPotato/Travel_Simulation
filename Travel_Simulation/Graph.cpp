@@ -31,9 +31,9 @@ Graph::Graph(int cityNum)
 //析构函数，释放内存
 Graph::~Graph()
 {
-    for(int i = 0; i < vexnum; i++)
+    for(int i = 0; i < vexnum;i++)
 		delete[] matrix[i];
-	delete[] matrix;
+    delete[] matrix;
 }
 long Graph::locateVex(string city)
 {
@@ -61,6 +61,11 @@ void Graph::setValue(string city1,string city2,int value)
     long i = locateVex(city1);
     long j = locateVex(city2);
     matrix[i][j] = value;
+}
+
+void Graph::setVexsList(vector<std::string> list)
+{
+    vexs = list;
 }
 
 
