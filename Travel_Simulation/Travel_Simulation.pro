@@ -28,6 +28,11 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     Strategy.cpp \
+    Tourist.cpp \
+    Graph.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    Strategy.cpp \
     Tourist.cpp
 
 HEADERS += \
@@ -36,12 +41,25 @@ HEADERS += \
     Time.h \
     Result.h \
     Path.h \
+    Tourist.h \
+    Graph.h \
+    mainwindow.h \
+    Path.h \
+    Result.h \
+    Strategy.h \
+    Time.h \
     Tourist.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+SUBDIRS += \
+    Travel_Simulation.pro
+
+DISTFILES +=

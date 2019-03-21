@@ -1,20 +1,22 @@
-#ifndef _GRAPH_H_
-#define _GRAPH_H_
+#ifndef GRAPH_H
+#define GRAPH_H
 #include <string>
-
+#include <vector>
+using std::vector;
+using std::string;
 #define MaxInt 32767
 
 //图类的定义
 class Graph 
 {
-private：
+private:
     vector<string> vexs;              //顶点表
     int **matrix;                     //邻接矩阵
-	int vexnum                        //顶点数
-public：
+    int vexnum;                        //顶点数
+public:
 	Graph(int cityNum);                      //构造函数,参数是城市的数量
 	~Graph();
-	int locateVex(string city); 
+    long locateVex(string city);
 	void ShortestPath_DIJ();
 	int getValue(string city1,string city2);
 	void setValue(string city1,string city2,int value);
