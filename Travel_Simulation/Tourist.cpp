@@ -16,6 +16,7 @@ Tourist::Tourist(string start, string end, int strategy, Time t) {
     dest = end;
     type = strategy;
     expectedTime = t;
+
 }
 
 unsigned short Tourist::getId() {

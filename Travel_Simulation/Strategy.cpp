@@ -14,6 +14,10 @@ Strategy::Strategy(int t, string d1, string d2, Time T)
     depart = d1;
     dest = d2;
     expectedTime = T;
+    result.timeCost.day = 0;
+    result.timeCost.hour = 0;
+    result.timeCost.minute = 0;
+    result.moenyCost = 0;
 }
 
 void Strategy::startStrategy()
@@ -59,6 +63,7 @@ void Strategy::cheapestStrategy()
     cout << std::endl << cityList.end() - cityList.begin() << endl;
 
     Graph G(cityList.size());
+    //Graph timeGraph
     G.setVexsList(cityList);
 
     vector<string>::iterator i, j;
@@ -66,8 +71,8 @@ void Strategy::cheapestStrategy()
     QString select;
     for (i = cityList.begin(); i != cityList.end(); i++)
         for (j = cityList.begin(); j != cityList.end(); j++) {
-            if (*i == *j)
-                G.setValue(*i, *j, 0);
+            if (*i == *j);
+                //G.setValue(*i, *j, 0);
             else {
                 QString s1 = QString::fromStdString(*i);
                 QString s2 = QString::fromStdString(*j);
@@ -76,9 +81,28 @@ void Strategy::cheapestStrategy()
                 query.first();
                 value = query.value("Price").toInt();
                 G.setValue(*i, *j, value);
+
+                //QString depTime = query.value("Dep_Time").toString();
+                QString timeCost = query.value("Time_Cost").toString();
+                Time t1;
+                t1.day = 0;
+                t1.hour = timeCost.section(":", 0, 0).toUShort();
+                t1.minute = timeCost.section(":", 1, 1).toUShort();
+                G.setTimeTableValue(*i, *j, t1);
             }
         }
      G.printMatrix();
+     G.shortestPathDJ(depart, dest, result);
+     cout << "出发地: " << depart << "目的地: " << dest << endl;
+     cout << "旅游线路:" << endl;
+     vector<Path>::iterator iter2;
+     Time timeUsed;
+     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
+        cout << (*iter2).start << "--->" << (*iter2).end << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
+        timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
+        cout << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
+     }
+     cout << "总花费金钱: " << result.moenyCost << endl;
 }
 
 void Strategy::fastestStrategy()

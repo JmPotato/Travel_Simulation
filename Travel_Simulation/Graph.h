@@ -2,9 +2,12 @@
 #define GRAPH_H
 #include <string>
 #include <vector>
+#include "Result.h"
+#include "MyTime.h"
 using std::vector;
 using std::string;
 #define MaxInt 32767
+
 
 //图类的定义
 class Graph 
@@ -12,16 +15,20 @@ class Graph
 private:
     vector<string> vexs;              //顶点表
     int **matrix;                     //邻接矩阵
+    Time **timeTable;
     unsigned long vexnum;                        //顶点数
+    string getVex(long i);
+    long locateVex(string city);
 public:
     Graph(unsigned long cityNum);                      //构造函数,参数是城市的数量
 	~Graph();
-    long locateVex(string city);
-	void ShortestPath_DIJ();
     int getValue(string city1,string city2);
+    Time getTimeTableValue(string city1, string sity2);
     void setValue(string city1,string city2,int value);
+    void setTimeTableValue(string city1, string city2, Time value);
     void setVexsList(vector<string> list);
     void printMatrix();
+    void shortestPathDJ(string Dep, string Dest, Result &result);
 };
 
 #endif //GRAPH_H

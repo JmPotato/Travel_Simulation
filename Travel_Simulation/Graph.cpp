@@ -3,6 +3,7 @@
 using std::cout;
 using std::endl;
 //成员函数的实现
+
 Graph::Graph(unsigned long cityNum)
 {
     //string v1,v2;       //两个城市
@@ -10,15 +11,22 @@ Graph::Graph(unsigned long cityNum)
     vexnum = cityNum;
 	
 	//动态申请内存
-	matrix = new int*[vexnum];
+    matrix = new int*[vexnum];
     for(unsigned long i = 0; i < vexnum; i++)
-		matrix[i] = new int[vexnum];
-	
+        matrix[i] = new int[vexnum];
+
+    timeTable = new Time*[vexnum];
+    for(unsigned long i = 0; i < vexnum; i++)
+        timeTable[i] = new Time[vexnum];
+
     //均初始化为极大值MaxInt
     for(unsigned long  i = 0; i < vexnum; i++)
         for(unsigned long j = 0;j < vexnum; j++)
         {
-            matrix[i][j]=MaxInt;
+            matrix[i][j] = MaxInt;
+            timeTable[i][j].day = 0;
+            timeTable[i][j].hour = 0;
+            timeTable[i][j].minute = 0;
         }
 	//构造邻接矩阵
 //	for(int k=0;k<vexnum;k++)
@@ -37,6 +45,7 @@ Graph::~Graph()
 		delete[] matrix[i];
     delete[] matrix;
 }
+
 long Graph::locateVex(string city)
 {
 
@@ -55,7 +64,19 @@ int Graph::getValue(string city1,string city2)
 {
     long i = locateVex(city1);
     long j = locateVex(city2);
-	return matrix[i][j];
+    return matrix[i][j];
+}
+
+Time Graph::getTimeTableValue(std::string city1, std::string city2)
+{
+    long i = locateVex(city1);
+    long j = locateVex(city2);
+    return timeTable[i][j];
+}
+
+std::string Graph::getVex(long i)
+{
+    return vexs[i];
 }
 
 void Graph::setValue(string city1,string city2,int value)
@@ -63,6 +84,13 @@ void Graph::setValue(string city1,string city2,int value)
     long i = locateVex(city1);
     long j = locateVex(city2);
     matrix[i][j] = value;
+}
+
+void Graph::setTimeTableValue(std::string city1, std::string city2, Time value)
+{
+    long i = locateVex(city1);
+    long j = locateVex(city2);
+    timeTable[i][j] = value;
 }
 
 void Graph::setVexsList(vector<std::string> list)
@@ -79,6 +107,61 @@ void Graph::printMatrix()
         }
         cout << endl;
     }
+}
+
+void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
+{
+    long *tempPath = new long[vexnum];
+    bool *s = new bool[vexnum];
+    int *d = new int[vexnum];
+    // Dijkstra Algorithm
+    unsigned long n = vexnum;
+    long v0 = locateVex(Dep);
+    long vt = locateVex(Dest);
+    unsigned long w, v;
+    for (v = 0; v < n; v++) {
+        s[v] = false;
+        d[v] = matrix[v0][v];
+        if (d[v] < MaxInt) tempPath[v] = v0;
+        else tempPath[v] = -1;
+    }
+    s[v0] = true;
+    d[v0] = 0;
+    int min;
+    for (unsigned long i = 1; i < n; i++) {
+        min = MaxInt;
+        for (w = 0; w < n; w++)
+            if (!s[w] && d[w] < min) {
+                v = w;
+                min = d[w];
+            }
+        s[v] = true;
+        for (w = 0; w < n; w++)
+            if (!s[w] && (d[v] + matrix[v][w] < d[w])) {
+                d[w] = d[v] + matrix[v][w];
+                tempPath[w] = v;
+            }
+    }
+
+    Path path;
+
+    while (tempPath[vt] != -1) {
+        long pre = tempPath[vt];
+        path.start = getVex(pre);
+        path.end = getVex(vt);
+        path.moneyCost = matrix[pre][vt];
+        result.route.push_back(path);
+        vt = pre;
+    }
+
+    vt = locateVex(Dest);
+    result.moenyCost = d[vt];
+    std::reverse(result.route.begin(), result.route.end());
+
+    delete [] tempPath;
+    delete [] s;
+    delete [] d;
+
 }
 
 

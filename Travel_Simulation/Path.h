@@ -10,7 +10,7 @@ typedef  struct PATH {
     string start;
     string end;
     Time timeCost;
-    unsigned int moneyCost;
+    int moneyCost;
 } Path;
 
 #endif // PATH_H
