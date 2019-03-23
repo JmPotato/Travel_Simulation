@@ -5,18 +5,14 @@ Tourist::Tourist(string start, string end, int strategy) {
     depart = start;
     dest = end;
     type = strategy;
-    expectedTime.day = 0;
-    expectedTime.hour = 0;
-    expectedTime.minute = 0;    //初始化时无特殊指定，期望时间默认为 0
 }
 
-Tourist::Tourist(string start, string end, int strategy, Time t) {
+Tourist::Tourist(string start, string end, int strategy, MyTime t) {
 //    id = 0;
     depart = start;
     dest = end;
     type = strategy;
-    expectedTime = t;
-
+    destTime = t;
 }
 
 unsigned short Tourist::getId() {
@@ -35,15 +31,11 @@ int Tourist::getType() {
     return type;
 }
 
-Time Tourist::getExpectedTime() {
-    return expectedTime;
-}
-
 string Tourist::getLocation() {
     return location;
 }
 
 void Tourist::getStrategy() {
-    Strategy touristStrategy(type, depart, dest, expectedTime);
+    Strategy touristStrategy(type, depart, dest, departTime, destTime);
     touristStrategy.startStrategy();
 }

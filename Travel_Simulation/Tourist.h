@@ -14,16 +14,17 @@ class Tourist {
     string dest;            // 目的地
     int type;               // 旅客选择的策略：
                             // 1:策略一，2:策略二，3：策略三
-    Time expectedTime;      // 策略三中的限时
+    MyTime departTime;        // 期望出发时间
+    MyTime destTime;          // 期望到达时间
     string location;        // 旅客当前位置
 public:
     Tourist(string start, string end, int strategy);
-    Tourist(string start, string end, int strategy, Time t);
+    Tourist(string start, string end, int strategy, MyTime t);
     unsigned short getId();
     string getDepart();
     string getDest();
     int getType();
-    Time getExpectedTime();
+    MyTime getExpectedMyTime();
     string getLocation();
     void getStrategy();
 };

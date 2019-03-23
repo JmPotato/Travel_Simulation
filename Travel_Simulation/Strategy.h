@@ -10,14 +10,15 @@ using std::string;
 class Strategy
 {
 public:
-    Strategy(int t, string d1, string d2, Time T);
+    Strategy(int t, string d1, string d2, MyTime departT, MyTime destT);
 
     void startStrategy();
 private:
     int type;
     string depart;
     string dest;
-    Time expectedTime;
+    MyTime departTime;
+    MyTime destTime;
 
     Result result;
 

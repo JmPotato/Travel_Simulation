@@ -9,7 +9,7 @@ using std::string;
 typedef  struct PATH {
     string start;
     string end;
-    Time timeCost;
+    MyTime timeCost;
     int moneyCost;
 } Path;
 

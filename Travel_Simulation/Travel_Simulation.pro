@@ -30,6 +30,7 @@ SOURCES += \
     Strategy.cpp \
     Tourist.cpp \
     Graph.cpp \
+    MyTime.cpp
 
 HEADERS += \
         mainwindow.h \

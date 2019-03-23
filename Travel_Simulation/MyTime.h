@@ -1,11 +1,27 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef MyTime_H
+#define MyTime_H
 
-typedef  struct TIME {
+#include <iostream>
+
+//typedef  struct MyTime {
+//    unsigned short day;
+//    unsigned short hour;
+//    unsigned short minute;
+//} MyTime;
+
+class MyTime {
+public:
     unsigned short day;
     unsigned short hour;
     unsigned short minute;
-} Time;
 
+    MyTime();
+    MyTime(unsigned short d, unsigned short h, unsigned short m);
+    MyTime(const MyTime &obj);
+    ~MyTime();
 
-#endif // TIME_H
+    MyTime operator+(const MyTime &t);
+    MyTime operator-(const MyTime &t);
+};
+
+#endif // MyTime_H

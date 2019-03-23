@@ -15,7 +15,7 @@ class Graph
 private:
     vector<string> vexs;              //顶点表
     int **matrix;                     //邻接矩阵
-    Time **timeTable;
+    MyTime **timeTable;
     unsigned long vexnum;                        //顶点数
     string getVex(long i);
     long locateVex(string city);
@@ -23,9 +23,9 @@ public:
     Graph(unsigned long cityNum);                      //构造函数,参数是城市的数量
 	~Graph();
     int getValue(string city1,string city2);
-    Time getTimeTableValue(string city1, string sity2);
+    MyTime getTimeTableValue(string city1, string sity2);
     void setValue(string city1,string city2,int value);
-    void setTimeTableValue(string city1, string city2, Time value);
+    void setTimeTableValue(string city1, string city2, MyTime value);
     void setVexsList(vector<string> list);
     void printMatrix();
     void shortestPathDJ(string Dep, string Dest, Result &result);

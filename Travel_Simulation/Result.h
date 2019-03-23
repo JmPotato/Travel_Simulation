@@ -8,7 +8,7 @@
 using std::vector;
 
 typedef struct RESULT {
-    Time timeCost;
+    MyTime timeCost;
     int moenyCost;
     vector<Path> route;
 } Result;

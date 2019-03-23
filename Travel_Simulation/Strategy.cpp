@@ -8,12 +8,13 @@ using std::set;
 using std::cout;
 using std::endl;
 
-Strategy::Strategy(int t, string d1, string d2, Time T)
+Strategy::Strategy(int t, string d1, string d2, MyTime departT, MyTime destT)
 {
     type = t;
     depart = d1;
     dest = d2;
-    expectedTime = T;
+    departTime = departT;
+    destTime = destT;
     result.timeCost.day = 0;
     result.timeCost.hour = 0;
     result.timeCost.minute = 0;
@@ -63,7 +64,7 @@ void Strategy::cheapestStrategy()
     cout << std::endl << cityList.end() - cityList.begin() << endl;
 
     Graph G(cityList.size());
-    //Graph timeGraph
+    //Graph MyTimeGraph
     G.setVexsList(cityList);
 
     vector<string>::iterator i, j;
@@ -82,12 +83,12 @@ void Strategy::cheapestStrategy()
                 value = query.value("Price").toInt();
                 G.setValue(*i, *j, value);
 
-                //QString depTime = query.value("Dep_Time").toString();
-                QString timeCost = query.value("Time_Cost").toString();
-                Time t1;
+                //QString depMyTime = query.value("Dep_MyTime").toString();
+                QString MyTimeCost = query.value("Time_Cost").toString();
+                MyTime t1;
                 t1.day = 0;
-                t1.hour = timeCost.section(":", 0, 0).toUShort();
-                t1.minute = timeCost.section(":", 1, 1).toUShort();
+                t1.hour = MyTimeCost.section(":", 0, 0).toUShort();
+                t1.minute = MyTimeCost.section(":", 1, 1).toUShort();
                 G.setTimeTableValue(*i, *j, t1);
             }
         }
@@ -96,7 +97,7 @@ void Strategy::cheapestStrategy()
      cout << "出发地: " << depart << "目的地: " << dest << endl;
      cout << "旅游线路:" << endl;
      vector<Path>::iterator iter2;
-     Time timeUsed;
+     MyTime timeUsed;
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
         cout << (*iter2).start << "--->" << (*iter2).end << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);

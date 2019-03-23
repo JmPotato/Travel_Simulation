@@ -15,18 +15,15 @@ Graph::Graph(unsigned long cityNum)
     for(unsigned long i = 0; i < vexnum; i++)
         matrix[i] = new int[vexnum];
 
-    timeTable = new Time*[vexnum];
+    timeTable = new MyTime*[vexnum];
     for(unsigned long i = 0; i < vexnum; i++)
-        timeTable[i] = new Time[vexnum];
+        timeTable[i] = new MyTime[vexnum];
 
     //均初始化为极大值MaxInt
     for(unsigned long  i = 0; i < vexnum; i++)
         for(unsigned long j = 0;j < vexnum; j++)
         {
             matrix[i][j] = MaxInt;
-            timeTable[i][j].day = 0;
-            timeTable[i][j].hour = 0;
-            timeTable[i][j].minute = 0;
         }
 	//构造邻接矩阵
 //	for(int k=0;k<vexnum;k++)
@@ -67,7 +64,7 @@ int Graph::getValue(string city1,string city2)
     return matrix[i][j];
 }
 
-Time Graph::getTimeTableValue(std::string city1, std::string city2)
+MyTime Graph::getTimeTableValue(std::string city1, std::string city2)
 {
     long i = locateVex(city1);
     long j = locateVex(city2);
@@ -86,7 +83,7 @@ void Graph::setValue(string city1,string city2,int value)
     matrix[i][j] = value;
 }
 
-void Graph::setTimeTableValue(std::string city1, std::string city2, Time value)
+void Graph::setTimeTableValue(std::string city1, std::string city2, MyTime value)
 {
     long i = locateVex(city1);
     long j = locateVex(city2);
