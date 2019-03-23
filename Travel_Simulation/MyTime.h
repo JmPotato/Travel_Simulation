@@ -2,6 +2,7 @@
 #define MyTime_H
 
 #include <iostream>
+#include <QString>
 
 //typedef  struct MyTime {
 //    unsigned short day;
@@ -22,6 +23,11 @@ public:
 
     MyTime operator+(const MyTime &t);
     MyTime operator-(const MyTime &t);
+    bool operator==(const MyTime &t);
+    bool operator<(const MyTime &t);
+    bool operator>(const MyTime &t);
+
+    void parseString(QString timeString);
 };
 
 #endif // MyTime_H

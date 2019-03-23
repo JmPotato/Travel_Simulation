@@ -24,7 +24,6 @@ public:
     string getDepart();
     string getDest();
     int getType();
-    MyTime getExpectedMyTime();
     string getLocation();
     void getStrategy();
 };

@@ -83,7 +83,7 @@ void Strategy::cheapestStrategy()
                 value = query.value("Price").toInt();
                 G.setValue(*i, *j, value);
 
-                //QString depMyTime = query.value("Dep_MyTime").toString();
+                //QString depMyTime = query.value("Dep_Time").toString();
                 QString MyTimeCost = query.value("Time_Cost").toString();
                 MyTime t1;
                 t1.day = 0;
@@ -98,11 +98,32 @@ void Strategy::cheapestStrategy()
      cout << "旅游线路:" << endl;
      vector<Path>::iterator iter2;
      MyTime timeUsed;
+     unsigned short day = 0;
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
         cout << (*iter2).start << "--->" << (*iter2).end << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
         cout << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
+        QString start = QString::fromStdString((*iter2).start);
+        QString end = QString::fromStdString((*iter2).end);
+        select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost asc limit 1").arg(start).arg(end).arg((*iter2).moneyCost);
+        query.exec(select);
+        query.first();
+        cout << query.value("Dep_Time").toString().toStdString() << endl;
+        MyTime period;
+        period.parseString(query.value("Dep_Time").toString());
+        if(departTime.day == 0 && departTime.hour == 0 && departTime.minute == 0) {
+            departTime = period;
+            destTime = departTime + timeUsed;
+            continue;
+        }
+        destTime.day = 0;
+        if(destTime > period)
+            day += 1;
+        destTime = period + timeUsed;
      }
+     destTime.day = day;
+     timeUsed = destTime - departTime;
+     cout << "总用时: " << timeUsed.day << "天" << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
      cout << "总花费金钱: " << result.moenyCost << endl;
 }
 
