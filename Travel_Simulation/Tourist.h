@@ -18,6 +18,7 @@ class Tourist {
     MyTime destTime;          // 期望到达时间
     string location;        // 旅客当前位置
 public:
+    QString log;
     Tourist(string start, string end, int strategy);
     Tourist(string start, string end, int strategy, MyTime t);
     unsigned short getId();

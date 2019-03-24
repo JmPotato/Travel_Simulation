@@ -12,7 +12,7 @@ class Strategy
 public:
     Strategy(int t, string d1, string d2, MyTime departT, MyTime destT);
 
-    void startStrategy();
+    void startStrategy(QString &log);
 private:
     int type;
     string depart;
@@ -23,9 +23,9 @@ private:
     Result result;
 
     // 三种策略
-    void cheapestStrategy();
-    void fastestStrategy();
-    void timeLimitStrategy();
+    void cheapestStrategy(QString &log);
+    void fastestStrategy(QString &log);
+    void timeLimitStrategy(QString &log);
 
 };
 

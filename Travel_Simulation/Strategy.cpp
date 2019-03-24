@@ -5,8 +5,6 @@
 #include <QtSql>
 
 using std::set;
-using std::cout;
-using std::endl;
 
 Strategy::Strategy(int t, string d1, string d2, MyTime departT, MyTime destT)
 {
@@ -21,29 +19,29 @@ Strategy::Strategy(int t, string d1, string d2, MyTime departT, MyTime destT)
     result.moenyCost = 0;
 }
 
-void Strategy::startStrategy()
+void Strategy::startStrategy(QString &log)
 {
     switch (type) {
         case 1:
-            cheapestStrategy();
+            cheapestStrategy(log);
             break;
         case 2:
-            fastestStrategy();
+            fastestStrategy(log);
             break;
         case 3:
-            timeLimitStrategy();
+            timeLimitStrategy(log);
             break;
     }
 }
 
-void Strategy::cheapestStrategy()
+void Strategy::cheapestStrategy(QString &log)
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     //std::cout << QDir::currentPath().toStdString() << std::endl;
     db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
     if (!db.open())
-        std::cerr << "Failed to connect to database" << std::endl;
+        log.append("Failed to connect to database\n");
    // db.exec("select * from time_table");
     QSqlQuery query(db);
     query.exec("select * from time_table");
@@ -56,12 +54,12 @@ void Strategy::cheapestStrategy()
     }
     set<string>::iterator iter;
 
-    cout << "录入城市：" << endl;
+    log.append("录入城市：\n");
     for (iter = _set.begin(); iter != _set.end(); iter++) {
         cityList.push_back(*iter);
-        cout << *iter << " ";
+        log.append(QString::fromStdString(*iter) + " ");
     }
-    cout << std::endl << cityList.end() - cityList.begin() << endl;
+    log.append(QString("\n%1\n").arg(cityList.end() - cityList.begin()));
 
     Graph G(cityList.size());
     //Graph MyTimeGraph
@@ -94,56 +92,62 @@ void Strategy::cheapestStrategy()
         }
      G.printMatrix();
      G.shortestPathDJ(depart, dest, result);
-     cout << "出发地: " << depart << " " << "目的地: " << dest << endl;
-     cout << "旅游线路:" << endl;
+     log.append(QString("出发地: %1    目的地: %2\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
+     log.append("旅游线路:\n");
      vector<Path>::iterator iter2;
      MyTime timeUsed;
      MyTime startTime;
      MyTime endTime;
      unsigned short day = 0;
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
-        QString startTimeString = query.value("Dep_Time").toString();
-        startTime.parseString(startTimeString);
-        cout << "出发时间: " << startTimeString.toStdString() << "    ";
-        cout << "路线: " << (*iter2).start << "--->" << (*iter2).end;
-        timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
-        endTime = startTime + timeUsed;
-        if (endTime.day == 0)
-            cout << "   到达时间: 当天" << endTime.hour << "时" << endTime.minute << "分";
-        else
-            cout << "   到达时间: 第" << endTime.day + 1<< "天" << endTime.hour << "时" << endTime.minute << "分";
-        cout << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
-
-        cout << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
         QString start = QString::fromStdString((*iter2).start);
         QString end = QString::fromStdString((*iter2).end);
-        select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost asc limit 1").arg(start).arg(end).arg((*iter2).moneyCost);
+        log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
+        timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
+        log.append(QString("花费金额: %1    ").arg((*iter2).moneyCost));
+        select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
         query.exec(select);
         query.first();
-        MyTime period;
+        MyTime period, tempPeriod;
         period.parseString(query.value("Dep_Time").toString());
+        while(query.next()) {
+            tempPeriod.parseString(query.value("Dep_Time").toString());
+            if(tempPeriod < period)
+                period = tempPeriod;
+        }
+        query.first();
+        log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
+        log.append(QString("用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
         if(departTime.day == 0 && departTime.hour == 0 && departTime.minute == 0) {
             departTime = period;
             destTime = departTime + timeUsed;
+            day += destTime.day;
             continue;
+        }
+        while(query.next()) {
+            tempPeriod.parseString(query.value("Dep_Time").toString());
+            if(!(tempPeriod < destTime))
+                period = tempPeriod;
         }
         destTime.day = 0;
         if(destTime > period)
             day += 1;
         destTime = period + timeUsed;
+        day += destTime.day;
      }
      destTime.day = day;
      timeUsed = destTime - departTime;
-     cout << "总用时: " << timeUsed.day << "天" << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
-     cout << "总花费金钱: " << result.moenyCost << endl;
+     log.append(QString("到达用时: %1天%2时%3分\n").arg(destTime.day).arg(destTime.hour).arg(destTime.minute));
+     log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+     log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
 }
 
-void Strategy::fastestStrategy()
+void Strategy::fastestStrategy(QString &log)
 {
 
 }
 
-void Strategy::timeLimitStrategy()
+void Strategy::timeLimitStrategy(QString &log)
 {
 
 }

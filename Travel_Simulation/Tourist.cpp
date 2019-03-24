@@ -37,5 +37,5 @@ string Tourist::getLocation() {
 
 void Tourist::getStrategy() {
     Strategy touristStrategy(type, depart, dest, departTime, destTime);
-    touristStrategy.startStrategy();
+    touristStrategy.startStrategy(log);
 }
