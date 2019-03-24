@@ -94,21 +94,32 @@ void Strategy::cheapestStrategy()
         }
      G.printMatrix();
      G.shortestPathDJ(depart, dest, result);
-     cout << "出发地: " << depart << "目的地: " << dest << endl;
+     cout << "出发地: " << depart << " " << "目的地: " << dest << endl;
      cout << "旅游线路:" << endl;
      vector<Path>::iterator iter2;
      MyTime timeUsed;
+     MyTime startTime;
+     MyTime endTime;
      unsigned short day = 0;
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
-        cout << (*iter2).start << "--->" << (*iter2).end << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
+        QString startTimeString = query.value("Dep_Time").toString();
+        startTime.parseString(startTimeString);
+        cout << "出发时间: " << startTimeString.toStdString() << "    ";
+        cout << "路线: " << (*iter2).start << "--->" << (*iter2).end;
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
+        endTime = startTime + timeUsed;
+        if (endTime.day == 0)
+            cout << "   到达时间: 当天" << endTime.hour << "时" << endTime.minute << "分";
+        else
+            cout << "   到达时间: 第" << endTime.day + 1<< "天" << endTime.hour << "时" << endTime.minute << "分";
+        cout << "   花费金钱: "<< (*iter2).moneyCost << "   用时: ";
+
         cout << timeUsed.hour << "时" << timeUsed.minute << "分" << endl;
         QString start = QString::fromStdString((*iter2).start);
         QString end = QString::fromStdString((*iter2).end);
         select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost asc limit 1").arg(start).arg(end).arg((*iter2).moneyCost);
         query.exec(select);
         query.first();
-        cout << query.value("Dep_Time").toString().toStdString() << endl;
         MyTime period;
         period.parseString(query.value("Dep_Time").toString());
         if(departTime.day == 0 && departTime.hour == 0 && departTime.minute == 0) {

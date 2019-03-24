@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    Tourist t("北京", "成都", 1);
+    Tourist t("深圳", "青岛", 1);
     t.getStrategy();
 
     return a.exec();
