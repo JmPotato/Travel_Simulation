@@ -159,7 +159,74 @@ void Strategy::cheapestStrategy(QString &log)
 
 void Strategy::fastestStrategy(QString &log)
 {
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
+    if (!db.open())
+        log.append("Failed to connect to database\n");
+    QSqlQuery query(db);
+    query.exec("select * from time_table");
+    vector<string> cityList;
+    set<string> _set;
+    string str;
+    while (query.next()) {
+        str = query.value("Dep").toString().toStdString();
+        _set.insert(str);
+    }
+    set<string>::iterator iter;
 
+    log.append("录入城市：\n");
+    for (iter = _set.begin(); iter != _set.end(); iter++) {
+        cityList.push_back(*iter);
+        log.append(QString::fromStdString(*iter) + " ");
+    }
+    log.append(QString("\n%1\n").arg(cityList.end() - cityList.begin()));
+
+    Graph G(cityList.size());
+    G.setVexsList(cityList);
+    G.findAllPath(QString::fromStdString(depart),QString::fromStdString(dest));
+
+    //处理G.allPath 类型为vector<vector<QString>>
+    Result best_route;
+    for(vector<vector<QString>>::iterator iter=G.allPath.begin();iter!=G.allPath.end();iter++)
+    {
+        //每一条路径分为几个Path
+        //每一条路径的Path组合起来算出Result
+        //选出Result.timeCost最小的方案输出
+        vector<QString> oneRoute=*iter;
+        vector<QString>::iterator city1;
+        vector<QString>::iterator city2;
+        //int length=oneRoute.size()-1;  //路径长度
+        vector<Path> paths;
+
+        for(city1=oneRoute.begin(),city2=oneRoute.begin()++;city2!=oneRoute.end();city1++,city2++)
+        {
+           Path fastPath;
+           MyTime pathDepTime;
+           MyTime pathCostTime;
+           MyTime pathFastArrTime;
+           QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(*city1).arg(*city2);
+           query.exec(select);
+           query.first();
+           pathDepTime.parseString(query.value("Dep Time").toString());
+           pathCostTime.parseString(query.value("Time cost").toString());
+           pathFastArrTime=pathDepTime+pathCostTime;
+           while (query.next())
+           {
+               pathDepTime.parseString(query.value("Dep Time").toString());
+               pathCostTime.parseString(query.value("Time cost").toString());
+               if(pathDepTime+pathCostTime>pathFastArrTime)
+                   pathFastArrTime=pathDepTime+pathCostTime;
+           }
+           /*fastPath.start=*city1->toStdString();
+           fastPath.end=*city2->toStdString();
+           fastPath.timeCost=
+           fastPath.moneyCost=*/
+
+           paths.push_back(fastPath);
+
+        }
+    }
 }
 
 void Strategy::timeLimitStrategy(QString &log)

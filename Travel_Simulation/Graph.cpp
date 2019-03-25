@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <iostream>
+#include <QStack>
 using std::cout;
 using std::endl;
 //成员函数的实现
@@ -159,6 +160,73 @@ void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
     delete [] s;
     delete [] d;
 
+}
+//city的第一个可访问的邻接点
+int Graph::findNext(QString city)
+{
+    for(unsigned long i=0;i<vexnum;i++)
+    {
+        if (!visited[locateVex(city.toStdString())][i + 1] && !visited[i][0])
+           return i;
+    }
+    return -1;
+}
+
+//找到两个城市之间的所有路径，保存到allPath中，
+void Graph::findAllPath(QString Dep, QString Dest)
+{
+    visited = new bool*[vexnum];
+    for(unsigned long i=0;i<vexnum;i++)
+        visited[i]=new bool[vexnum+1];
+
+    QStack<QString> s;
+    s.push(Dep);
+    visited[locateVex(Dep.toStdString())][0]=true;
+    QString top;
+    int n;
+    QString next;
+
+    while(!s.empty())
+    {
+        top=s.top();
+        if(top==Dest)
+        {
+            //将一条路径保存到allPath
+            vector<QString> onePath;
+            QStack<QString> temp = s;
+            while (!temp.empty())
+            {
+                QString _city = s.top();
+                onePath.push_back(_city);
+                temp.pop();
+            }
+            reverse(onePath.begin(), onePath.end());
+            allPath.push_back(onePath);
+
+            s.pop();
+            visited[locateVex(top.toStdString())][0] = false;
+        }
+        else
+        {
+            n =findNext(top);
+            next = QString::fromStdString(vexs[n]);
+            if (n != -1 && s.size()<5)
+            {
+               s.push(next);
+               visited[locateVex(top.toStdString())][n + 1] = true;
+               visited[n][0] = true;
+            }
+            else
+            {
+               s.pop();
+               for (unsigned long i = 0; i < vexnum+1; i++)
+                 visited[locateVex(top.toStdString())][i] = false;
+            }
+        }
+    }
+   for(unsigned long i=0;i<vexnum;i++)
+       delete[] visited[i];
+   delete visited;
 }
 
 
