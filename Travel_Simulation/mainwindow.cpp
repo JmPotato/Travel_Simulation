@@ -25,9 +25,13 @@ void MainWindow::on_planButton_clicked() {
     Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, 1);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
-    QDateTime desTime = ui->startTime->dateTime();
-    MyTime usedTime = t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
-    desTime.setDate(desTime.date().addDays(usedTime.day));
-    desTime.setTime(desTime.time().addSecs((usedTime.hour * 60 + usedTime.minute)*60));
-    ui->endTime->setDateTime(desTime);
+    MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
+//    QDateTime desTime = ui->startTime->dateTime();
+//    MyTime usedTime = t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
+//    desTime.setTime(desTime.time().addSecs(usedTime.hour * 3600 + usedTime.minute * 60));
+//    desTime.setDate(desTime.date().addDays(usedTime.day));
+//    ui->endTime->setDateTime(desTime);
+    ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
+    ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
+    ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
 }
