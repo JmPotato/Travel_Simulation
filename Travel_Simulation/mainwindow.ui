@@ -61,7 +61,7 @@
       <item row="11" column="0">
        <widget class="QLabel" name="startTimeLabel">
         <property name="text">
-         <string>出发时间</string>
+         <string>出发日期</string>
         </property>
        </widget>
       </item>
@@ -81,9 +81,6 @@
       </item>
       <item row="4" column="0" colspan="4">
        <widget class="QListWidget" name="passList"/>
-      </item>
-      <item row="11" column="1" colspan="3">
-       <widget class="QDateTimeEdit" name="startTime"/>
       </item>
       <item row="12" column="1" colspan="3">
        <widget class="QDateTimeEdit" name="endTime"/>
@@ -110,6 +107,9 @@
       </item>
       <item row="0" column="1" colspan="3">
        <widget class="QComboBox" name="departureBox"/>
+      </item>
+      <item row="11" column="1" colspan="3">
+       <widget class="QDateTimeEdit" name="startTime"/>
       </item>
      </layout>
     </item>

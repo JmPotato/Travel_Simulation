@@ -6,13 +6,14 @@
 
 using std::set;
 
-Strategy::Strategy(int t, string d1, string d2, MyTime departT, MyTime destT)
+Strategy::Strategy(int t, string d1, string d2, MyTime expectedDepartT, MyTime expectedDestT)
 {
     type = t;
     depart = d1;
     dest = d2;
-    departTime = departT;
-    destTime = destT;
+    departTime = expectedDepartT;
+    expectedDepartTime = expectedDepartT;
+    expectedDestTime = expectedDestT;
     result.timeCost.day = 0;
     result.timeCost.hour = 0;
     result.timeCost.minute = 0;
@@ -118,8 +119,22 @@ void Strategy::cheapestStrategy(QString &log)
         query.first();
         log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
         log.append(QString("用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
-        if(departTime.day == 0 && departTime.hour == 0 && departTime.minute == 0) {
-            departTime = period;
+        if(destTime.day == 0 && destTime.hour == 0 && destTime.minute == 0) {
+            MyTime earliest = period;
+            while(departTime > period) {
+                tempPeriod.parseString(query.value("Dep_Time").toString());
+                if(tempPeriod < period)
+                    period = tempPeriod;
+                if(!query.next())
+                    break;
+            }
+            query.first();
+            if(departTime > period) {
+                departTime = earliest;
+                departTime.day += 1;
+            } else {
+                departTime = period;
+            }
             destTime = departTime + timeUsed;
             day += destTime.day;
             continue;
@@ -136,10 +151,10 @@ void Strategy::cheapestStrategy(QString &log)
         day += destTime.day;
      }
      destTime.day = day;
-     timeUsed = destTime - departTime;
-     log.append(QString("到达用时: %1天%2时%3分\n").arg(destTime.day).arg(destTime.hour).arg(destTime.minute));
+     timeUsed = destTime - expectedDepartTime;
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
+     db.close();
 }
 
 void Strategy::fastestStrategy(QString &log)

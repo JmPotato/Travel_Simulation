@@ -7,12 +7,21 @@ Tourist::Tourist(string start, string end, int strategy) {
     type = strategy;
 }
 
-Tourist::Tourist(string start, string end, int strategy, MyTime t) {
+Tourist::Tourist(string start, string end, MyTime startTime, int strategy) {
 //    id = 0;
     depart = start;
     dest = end;
     type = strategy;
-    destTime = t;
+    expectedDepartTime = startTime;
+}
+
+Tourist::Tourist(string start, string end, MyTime startTime, MyTime endTime, int strategy) {
+//    id = 0;
+    depart = start;
+    dest = end;
+    type = strategy;
+    expectedDepartTime = startTime;
+    expectedDestTime = endTime;
 }
 
 unsigned short Tourist::getId() {
@@ -36,6 +45,15 @@ string Tourist::getLocation() {
 }
 
 void Tourist::getStrategy() {
-    Strategy touristStrategy(type, depart, dest, departTime, destTime);
-    touristStrategy.startStrategy(log);
+    planResult = new Strategy(type, depart, dest, expectedDepartTime, expectedDestTime);
+    planResult->startStrategy(log);
+}
+
+
+Strategy *Tourist::getPlanResult() {
+    return planResult;
+}
+
+QString Tourist::getLog() {
+    return log;
 }

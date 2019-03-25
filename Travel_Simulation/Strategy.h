@@ -10,16 +10,16 @@ using std::string;
 class Strategy
 {
 public:
-    Strategy(int t, string d1, string d2, MyTime departT, MyTime destT);
-
-    void startStrategy(QString &log);
-private:
-    int type;
     string depart;
     string dest;
     MyTime departTime;
     MyTime destTime;
-
+    MyTime expectedDepartTime;
+    MyTime expectedDestTime;
+    Strategy(int t, string d1, string d2, MyTime expectedDepartT, MyTime expectedDestT);
+    void startStrategy(QString &log);
+private:
+    int type;
     Result result;
 
     // 三种策略

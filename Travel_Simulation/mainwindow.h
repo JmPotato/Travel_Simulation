@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDate>
+#include <QDateTime>
 #include <QTextStream>
 #include <QMainWindow>
 
