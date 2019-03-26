@@ -22,7 +22,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_planButton_clicked() {
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, 1);
+    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, 2);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
     MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;

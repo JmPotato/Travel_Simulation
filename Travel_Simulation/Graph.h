@@ -21,7 +21,7 @@ private:
     string getVex(long i);
     long locateVex(string city);
 public:
-    vector<vector<QString>> allPath;    //策略二中所有路径
+/*    vector<vector<QString>> allPath; */   //策略二中所有路径
     Graph(unsigned long cityNum);                      //构造函数,参数是城市的数量
 	~Graph();
     int getValue(string city1,string city2);
@@ -31,8 +31,8 @@ public:
     void setVexsList(vector<string> list);
     void printMatrix();
     void shortestPathDJ(string Dep, string Dest, Result &result);
-    void findAllPath(QString Dep, QString Dest);
-    int findNext(QString city);
+//    void findAllPath(QString Dep, QString Dest);
+//    int findNext(QString city);
 };
 
 #endif //GRAPH_H

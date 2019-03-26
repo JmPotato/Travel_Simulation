@@ -5,6 +5,9 @@ Tourist::Tourist(string start, string end, int strategy) {
     depart = start;
     dest = end;
     type = strategy;
+    expectedDestTime.day = 0;
+    expectedDestTime.hour = 0;
+    expectedDestTime.minute = 0;
 }
 
 Tourist::Tourist(string start, string end, MyTime startTime, int strategy) {

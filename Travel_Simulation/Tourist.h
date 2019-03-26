@@ -9,6 +9,7 @@
 using namespace std;
 
 class Tourist {
+private:
     unsigned short id;      // 乘客编号
     string depart;          // 出发地
     string dest;            // 目的地
