@@ -184,49 +184,122 @@ void Strategy::fastestStrategy(QString &log)
 
     Graph G(cityList.size());
     G.setVexsList(cityList);
+
+    //找出所有路径
     G.findAllPath(QString::fromStdString(depart),QString::fromStdString(dest));
 
     //处理G.allPath 类型为vector<vector<QString>>
     Result best_route;
+    MyTime fastTime(1000,1000,1000);  //初始化一个很大的值
     for(vector<vector<QString>>::iterator iter=G.allPath.begin();iter!=G.allPath.end();iter++)
     {
         //每一条路径分为几个Path
-        //每一条路径的Path组合起来算出Result
-        //选出Result.timeCost最小的方案输出
+        //每一条路径的Path组合起来算出形成Paths
+        //选出best_route输出
         vector<QString> oneRoute=*iter;
         vector<QString>::iterator city1;
         vector<QString>::iterator city2;
-        //int length=oneRoute.size()-1;  //路径长度
+        int count=0;
         vector<Path> paths;
+        MyTime previousArrTime(0,0,0);  //上一班车的到达时间
+        MyTime curRouteTime;
 
+        //找出对应一条路线的最快的paths
         for(city1=oneRoute.begin(),city2=oneRoute.begin()++;city2!=oneRoute.end();city1++,city2++)
         {
            Path fastPath;
            MyTime pathDepTime;
            MyTime pathCostTime;
-           MyTime pathFastArrTime;
-           QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(*city1).arg(*city2);
-           query.exec(select);
-           query.first();
-           pathDepTime.parseString(query.value("Dep Time").toString());
-           pathCostTime.parseString(query.value("Time cost").toString());
-           pathFastArrTime=pathDepTime+pathCostTime;
-           while (query.next())
+           MyTime pathArrTime;
+           QString pathNumber;
+
+           MyTime tmpDepTime;
+           MyTime tmpCostTime;
+           if(count==0)//第一个Path
            {
-               pathDepTime.parseString(query.value("Dep Time").toString());
-               pathCostTime.parseString(query.value("Time cost").toString());
-               if(pathDepTime+pathCostTime>pathFastArrTime)
-                   pathFastArrTime=pathDepTime+pathCostTime;
+               QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(*city1).arg(*city2);
+               query.exec(select);
+               query.first();
+               pathDepTime.parseString(query.value("Dep_Time").toString());
+               pathCostTime.parseString(query.value("Time_cost").toString());
+               pathArrTime=pathDepTime+pathCostTime;
+               pathNumber=query.value("Number").toString();
+
+               while (query.next())
+               {
+                   tmpDepTime.parseString(query.value("Dep_Time").toString());
+                   tmpCostTime.parseString(query.value("Time_cost").toString());
+                   if(tmpDepTime+tmpCostTime<pathArrTime)
+                   {
+                       pathDepTime=tmpDepTime;
+                       pathCostTime=tmpCostTime;
+                       pathArrTime=pathDepTime+pathCostTime;
+                       pathNumber=query.value("Number").toString();
+                   }
+               }
+               fastPath.startTime=pathDepTime;
+               fastPath.timeCost=pathCostTime;
+               fastPath.endTime=pathArrTime;
+               fastPath.number=pathNumber;
+               paths.push_back(fastPath);
+               previousArrTime=fastPath.endTime;
+               count++;
            }
-           /*fastPath.start=*city1->toStdString();
-           fastPath.end=*city2->toStdString();
-           fastPath.timeCost=
-           fastPath.moneyCost=*/
+           else  //第二条以后的path
+           {
+               QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(*city1).arg(*city2);
+               query.exec(select);
+               //给path赋初值
+               while(query.next())
+               {
+                   tmpDepTime.parseString(query.value("Dep_Time").toString());
+                   if(tmpDepTime>previousArrTime)
+                   break;
+               }
+               pathDepTime.parseString(query.value("Dep_Time").toString());
+               pathCostTime.parseString(query.value("Time_cost").toString());
+               pathArrTime=pathDepTime+pathCostTime;
+               pathNumber=query.value("Number").toString();
+               //找最早到达city2的path
+               while (query.next())
+               {
+                   tmpDepTime.parseString(query.value("Dep_Time").toString());
+                   tmpCostTime.parseString(query.value("Time_cost").toString());
+                   if(tmpDepTime>previousArrTime && (tmpDepTime+tmpCostTime<pathArrTime) )
+                   {
+                       pathDepTime.parseString(query.value("Dep_Time").toString());
+                       pathCostTime.parseString(query.value("Time_cost").toString());
+                       pathArrTime=pathDepTime+pathCostTime;
+                       pathNumber=query.value("Number").toString();
+                   }
+               }
+               fastPath.startTime=pathDepTime;
+               fastPath.timeCost=pathCostTime;
+               fastPath.endTime=pathArrTime;
+               fastPath.number=pathNumber;
+               paths.push_back(fastPath);
+               previousArrTime=fastPath.endTime;
+               count++;
+           }
+        }
 
-           paths.push_back(fastPath);
-
+        vector<Path>::iterator first=paths.begin();
+        vector<Path>::iterator last=paths.end();
+        curRouteTime=(*last).endTime - (*first).startTime;
+        if(curRouteTime<fastTime)
+        {
+           best_route.route=paths;
+           fastTime=curRouteTime;
         }
     }
+    //找到时间最短的路径,包括了各个path的startTime，TimeCost,endTime,航班号number;
+    best_route.timeCost=fastTime;
+
+    //输出best_route
+   /* for(vector<Path>::iterator iter=best_route.route.begin();iter!=best_route.route.end();iter++)
+        qDebug()<<QString::fromStdString(*(iter)->start)*/
+
+
 }
 
 void Strategy::timeLimitStrategy(QString &log)

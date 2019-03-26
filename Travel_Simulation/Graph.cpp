@@ -210,7 +210,7 @@ void Graph::findAllPath(QString Dep, QString Dest)
         {
             n =findNext(top);
             next = QString::fromStdString(vexs[n]);
-            if (n != -1 && s.size()<5)
+            if (n != -1 && s.size()<4)
             {
                s.push(next);
                visited[locateVex(top.toStdString())][n + 1] = true;
