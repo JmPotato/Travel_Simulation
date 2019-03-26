@@ -227,6 +227,7 @@ void Graph::findAllPath(QString Dep, QString Dest)
    for(unsigned long i=0;i<vexnum;i++)
        delete[] visited[i];
    delete visited;
+
 }
 
 
