@@ -219,6 +219,7 @@ void Strategy::fastestStrategy(QString &log)
     string tempCity;
     stack<string> tempS;    
     vector<string> tempCityPath;
+    vector<string> bestPath;
     Path onePath;
     MyTime minEndTime(10000, 10000, 10000);
     while(!s.empty())
@@ -279,6 +280,7 @@ void Strategy::fastestStrategy(QString &log)
 
             if (endTime < minEndTime) {
                 minEndTime = endTime;
+                bestPath = tempCityPath;
             }
 
             s.pop();
@@ -310,8 +312,11 @@ void Strategy::fastestStrategy(QString &log)
             }
         }
     }
-
-   cout << "最少用时: " << minEndTime.day << "天" << minEndTime.hour << "时" << minEndTime.minute << "分" << endl;
+   cout << endl;
+   cout << "最少用时: " << minEndTime.day << "天" << minEndTime.hour << "时" << minEndTime.minute << "分: ";
+   for (auto a : bestPath)
+       cout << a << " ";
+   cout << endl;
    for(unsigned long i=0; i < cityNum;i++)
        delete[] visited[i];
    delete[] visited;
