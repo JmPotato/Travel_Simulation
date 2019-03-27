@@ -346,6 +346,7 @@ void Strategy::fastestStrategy(QString &log)
               codeNumber = query.value("Number").toString();
               methodTool = query.value("Tran").toString();
               price = query.value("Price").toInt();
+              timeUsed.parseString(query.value("Time_Cost").toString());
           }
       }
       if(start == QString::fromStdString(depart)) {
@@ -358,6 +359,7 @@ void Strategy::fastestStrategy(QString &log)
                   codeNumber = query.value("Number").toString();
                   methodTool = query.value("Tran").toString();
                   price = query.value("Price").toInt();
+                  timeUsed.parseString(query.value("Time_Cost").toString());
               }
               if(!query.next())
                   break;
@@ -380,6 +382,7 @@ void Strategy::fastestStrategy(QString &log)
                   codeNumber = query.value("Number").toString();
                   methodTool = query.value("Tran").toString();
                   price = query.value("Price").toInt();
+                  timeUsed.parseString(query.value("Time_Cost").toString());
               }
           }
           destTime.day = 0;
@@ -403,6 +406,7 @@ void Strategy::fastestStrategy(QString &log)
    for(unsigned long i=0; i < cityNum;i++)
        delete[] visited[i];
    delete[] visited;
+   cout << "Best: " << minEndTime.day << "天" << minEndTime.hour << "时" << minEndTime.minute << "分" << endl;
    log.append(QString("区间用时: %1天%2时%3分\n").arg(minEndTime.day).arg(minEndTime.hour).arg(minEndTime.minute));
    // db.close();
 }
