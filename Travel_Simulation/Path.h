@@ -10,6 +10,7 @@ using std::string;
 typedef  struct PATH {
     string start;
     string end;
+    QString tool;
     QString number;
     MyTime timeCost;
     MyTime startTime;
