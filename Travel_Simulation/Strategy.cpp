@@ -98,8 +98,6 @@ void Strategy::cheapestStrategy(QString &log)
      log.append("旅游线路:\n");
      vector<Path>::iterator iter2;
      MyTime timeUsed;
-     MyTime startTime;
-     MyTime endTime;
      unsigned short day = 0;
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
         QString start = QString::fromStdString((*iter2).start);
@@ -109,14 +107,16 @@ void Strategy::cheapestStrategy(QString &log)
         query.exec(select);
         query.first();
         MyTime period, tempPeriod;
-        QString codeNumber;
+        QString codeNumber, methodTool;
         period.parseString(query.value("Dep_Time").toString());
         codeNumber = query.value("Number").toString();
+        methodTool = query.value("Tran").toString();
         while(query.next()) {
             tempPeriod.parseString(query.value("Dep_Time").toString());
             if(tempPeriod < period) {
                 period = tempPeriod;
                 codeNumber = query.value("Number").toString();
+                methodTool = query.value("Tran").toString();
             }
         }
         if(start == QString::fromStdString(depart)) {
@@ -152,7 +152,8 @@ void Strategy::cheapestStrategy(QString &log)
             day += destTime.day;
         }
         log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
-        log.append(QString("车次: %1    ").arg(codeNumber));
+        log.append(QString("交通工具: %1    ").arg(methodTool));
+        log.append(QString("车次/航班号: %1\n").arg(codeNumber));
         log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
         log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
         log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
@@ -316,11 +317,99 @@ void Strategy::fastestStrategy(QString &log)
         }
     }
    cout << endl;
-   log.append(QString("出发地: %1    目的地: %2\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
+   log.append(QString("出发地: %1    目的地: %2\n\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
    log.append("旅游线路:\n");
-   for (auto a : bestPath)
-       log.append(QString::fromStdString(a) + QString(" "));
-   log.append("\n");
+   MyTime timeUsed;
+   int moneyCost = 0;
+   unsigned short day = 0;
+   vector<string>::iterator it;
+   for(it = bestPath.begin()+1;it != bestPath.end();it++) {
+      QString start = QString::fromStdString(*(it-1));
+      QString end = QString::fromStdString(*(it));
+      QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(start).arg(end);
+      query.exec(select);
+      query.first();
+      timeUsed.parseString(query.value("Time_Cost").toString());
+      MyTime tempTimeUsed;
+      while(query.next()) {
+          tempTimeUsed.parseString(query.value("Time_Cost").toString());
+          if(tempTimeUsed < timeUsed) {
+              timeUsed = tempTimeUsed;
+          }
+      }
+      query.first();
+      MyTime period, tempPeriod;
+      QString codeNumber, methodTool;
+      int price = 0;
+      period.parseString(query.value("Dep_Time").toString());
+      codeNumber = query.value("Number").toString();
+      methodTool = query.value("Tran").toString();
+      price = query.value("Price").toInt();
+      query.first();
+      while(query.next()) {
+          tempPeriod.parseString(query.value("Dep_Time").toString());
+          tempTimeUsed.parseString(query.value("Time_Cost").toString());
+          if(tempPeriod < period && tempTimeUsed == timeUsed) {
+              period = tempPeriod;
+              codeNumber = query.value("Number").toString();
+              methodTool = query.value("Tran").toString();
+              price = query.value("Price").toInt();
+          }
+      }
+      if(start == QString::fromStdString(depart)) {
+          MyTime earliest = period;
+          query.first();
+          while(departTime > period) {
+              tempPeriod.parseString(query.value("Dep_Time").toString());
+              tempTimeUsed.parseString(query.value("Time_Cost").toString());
+              if(tempPeriod > period && tempTimeUsed == timeUsed) {
+                  period = tempPeriod;
+                  codeNumber = query.value("Number").toString();
+                  methodTool = query.value("Tran").toString();
+                  price = query.value("Price").toInt();
+              }
+              if(!query.next())
+                  break;
+          }
+          if(departTime > period) {
+              departTime = earliest;
+              period = earliest;
+              departTime.day += 1;
+          } else {
+              departTime = period;
+          }
+          destTime = departTime + timeUsed;
+          day += destTime.day;
+      } else {
+          query.first();
+          while(query.next()) {
+              tempPeriod.parseString(query.value("Dep_Time").toString());
+              tempTimeUsed.parseString(query.value("Time_Cost").toString());
+              if(!(tempPeriod < destTime) && tempTimeUsed == timeUsed) {
+                  period = tempPeriod;
+                  codeNumber = query.value("Number").toString();
+                  methodTool = query.value("Tran").toString();
+                  price = query.value("Price").toInt();
+              }
+          }
+          destTime.day = 0;
+          if(destTime > period)
+              day += 1;
+          destTime = period + timeUsed;
+          day += destTime.day;
+      }
+      log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
+      log.append(QString("交通工具: %1    ").arg(methodTool));
+      log.append(QString("车次/航班号: %1\n").arg(codeNumber));
+      log.append(QString("花费金额: %1\n").arg(price));
+      log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
+      log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+      moneyCost += price;
+   }
+   destTime.day = day;
+   timeUsed = destTime - expectedDepartTime;
+   log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+   log.append(QString("总花费金额: %1\n").arg(moneyCost));
    for(unsigned long i=0; i < cityNum;i++)
        delete[] visited[i];
    delete[] visited;
