@@ -16,6 +16,7 @@ public:
     MyTime destTime;
     MyTime expectedDepartTime;
     MyTime expectedDestTime;
+    Result result;
 private:
 
     string depart;
@@ -23,7 +24,7 @@ private:
 
 
     int type;
-    Result result;
+
 
     // 三种策略
     void cheapestStrategy(QString &log);
