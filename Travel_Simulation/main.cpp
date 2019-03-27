@@ -4,12 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-    //QApplication a(argc, argv);
-    //MainWindow w;
-    //w.show();
-    Tourist t("成都", "上海", 2);
-    t.getStrategy();
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
-    //return a.exec();
-    return 0;
+    return a.exec();
 }

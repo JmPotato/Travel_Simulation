@@ -59,12 +59,9 @@ void Strategy::cheapestStrategy(QString &log)
     }
     set<string>::iterator iter;
 
-    log.append("录入城市：\n");
     for (iter = _set.begin(); iter != _set.end(); iter++) {
         cityList.push_back(*iter);
-        log.append(QString::fromStdString(*iter) + " ");
     }
-    log.append(QString("\n%1\n").arg(cityList.end() - cityList.begin()));
 
     Graph G(cityList.size());
     //Graph MyTimeGraph
@@ -97,7 +94,7 @@ void Strategy::cheapestStrategy(QString &log)
         }
      G.printMatrix();
      G.shortestPathDJ(depart, dest, result);
-     log.append(QString("出发地: %1    目的地: %2\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
+     log.append(QString("出发地: %1    目的地: %2\n\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
      log.append("旅游线路:\n");
      vector<Path>::iterator iter2;
      MyTime timeUsed;
@@ -107,58 +104,64 @@ void Strategy::cheapestStrategy(QString &log)
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
         QString start = QString::fromStdString((*iter2).start);
         QString end = QString::fromStdString((*iter2).end);
-        log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
-        log.append(QString("花费金额: %1    ").arg((*iter2).moneyCost));
         select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
         query.exec(select);
         query.first();
         MyTime period, tempPeriod;
+        QString codeNumber;
         period.parseString(query.value("Dep_Time").toString());
+        codeNumber = query.value("Number").toString();
         while(query.next()) {
             tempPeriod.parseString(query.value("Dep_Time").toString());
-            if(tempPeriod < period)
+            if(tempPeriod < period) {
                 period = tempPeriod;
+                codeNumber = query.value("Number").toString();
+            }
         }
-        query.first();
-        log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
-        log.append(QString("用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
-        if(destTime.day == 0 && destTime.hour == 0 && destTime.minute == 0) {
+        if(start == QString::fromStdString(depart)) {
             MyTime earliest = period;
+            query.first();
             while(departTime > period) {
                 tempPeriod.parseString(query.value("Dep_Time").toString());
-                if(tempPeriod < period)
+                if(tempPeriod > period)
                     period = tempPeriod;
                 if(!query.next())
                     break;
             }
-            query.first();
             if(departTime > period) {
                 departTime = earliest;
+                period = earliest;
                 departTime.day += 1;
             } else {
                 departTime = period;
             }
             destTime = departTime + timeUsed;
             day += destTime.day;
-            continue;
+        } else {
+            query.first();
+            while(query.next()) {
+                tempPeriod.parseString(query.value("Dep_Time").toString());
+                if(!(tempPeriod < destTime))
+                    period = tempPeriod;
+            }
+            destTime.day = 0;
+            if(destTime > period)
+                day += 1;
+            destTime = period + timeUsed;
+            day += destTime.day;
         }
-        while(query.next()) {
-            tempPeriod.parseString(query.value("Dep_Time").toString());
-            if(!(tempPeriod < destTime))
-                period = tempPeriod;
-        }
-        destTime.day = 0;
-        if(destTime > period)
-            day += 1;
-        destTime = period + timeUsed;
-        day += destTime.day;
+        log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
+        log.append(QString("车次: %1    ").arg(codeNumber));
+        log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
+        log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
+        log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      }
      destTime.day = day;
      timeUsed = destTime - expectedDepartTime;
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
-     db.close();
+//     db.close();
 }
 
 long findIndex(vector<string> v, string str)
@@ -313,14 +316,15 @@ void Strategy::fastestStrategy(QString &log)
         }
     }
    cout << endl;
-   cout << "最少用时: " << minEndTime.day << "天" << minEndTime.hour << "时" << minEndTime.minute << "分: ";
+   log.append(QString("出发地: %1    目的地: %2\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
+   log.append("旅游线路:\n");
    for (auto a : bestPath)
-       cout << a << " ";
-   cout << endl;
+       log.append(QString::fromStdString(a) + QString(" "));
+   log.append("\n");
    for(unsigned long i=0; i < cityNum;i++)
        delete[] visited[i];
    delete[] visited;
-   cout << count << endl;
+   log.append(QString("区间用时: %1天%2时%3分\n").arg(minEndTime.day).arg(minEndTime.hour).arg(minEndTime.minute));
    // db.close();
 }
 
