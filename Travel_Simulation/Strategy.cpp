@@ -326,17 +326,10 @@ void Strategy::fastestStrategy(QString &log)
    for(it = bestPath.begin()+1;it != bestPath.end();it++) {
       QString start = QString::fromStdString(*(it-1));
       QString end = QString::fromStdString(*(it));
-      QString select = QString("select * from time_table where Dep='%1' and Dest='%2'").arg(start).arg(end);
+      QString select = QString("select * from time_table where Dep='%1' and Dest='%2' order by Time_Cost").arg(start).arg(end);
       query.exec(select);
       query.first();
       timeUsed.parseString(query.value("Time_Cost").toString());
-      MyTime tempTimeUsed;
-      while(query.next()) {
-          tempTimeUsed.parseString(query.value("Time_Cost").toString());
-          if(tempTimeUsed < timeUsed) {
-              timeUsed = tempTimeUsed;
-          }
-      }
       query.first();
       MyTime period, tempPeriod;
       QString codeNumber, methodTool;
@@ -348,8 +341,7 @@ void Strategy::fastestStrategy(QString &log)
       query.first();
       while(query.next()) {
           tempPeriod.parseString(query.value("Dep_Time").toString());
-          tempTimeUsed.parseString(query.value("Time_Cost").toString());
-          if(tempPeriod < period && tempTimeUsed == timeUsed) {
+          if(tempPeriod < period) {
               period = tempPeriod;
               codeNumber = query.value("Number").toString();
               methodTool = query.value("Tran").toString();
@@ -361,8 +353,7 @@ void Strategy::fastestStrategy(QString &log)
           query.first();
           while(departTime > period) {
               tempPeriod.parseString(query.value("Dep_Time").toString());
-              tempTimeUsed.parseString(query.value("Time_Cost").toString());
-              if(tempPeriod > period && tempTimeUsed == timeUsed) {
+              if(tempPeriod > period) {
                   period = tempPeriod;
                   codeNumber = query.value("Number").toString();
                   methodTool = query.value("Tran").toString();
@@ -384,8 +375,7 @@ void Strategy::fastestStrategy(QString &log)
           query.first();
           while(query.next()) {
               tempPeriod.parseString(query.value("Dep_Time").toString());
-              tempTimeUsed.parseString(query.value("Time_Cost").toString());
-              if(!(tempPeriod < destTime) && tempTimeUsed == timeUsed) {
+              if(!(tempPeriod < destTime)) {
                   period = tempPeriod;
                   codeNumber = query.value("Number").toString();
                   methodTool = query.value("Tran").toString();
