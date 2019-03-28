@@ -3,6 +3,11 @@
 #include "Strategy.h"
 #include "Tourist.h"
 
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ * @author ghz
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -18,13 +23,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->destinationBox->addItems(cityList);
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/**
+ * @brief MainWindow::on_planButton_clicked
+ * @author ghz
+ */
 void MainWindow::on_planButton_clicked() {
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
+    MyTime expectedEndTime(ui->endTime->date().day() - ui->startTime->date().day(), ui->endTime->time().hour(), ui->endTime->time().minute());
     Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, ui->strategyBox->currentIndex() + 1);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
