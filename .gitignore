@@ -26,6 +26,9 @@
 *.a
 *.lib
 
+# Makefile
+Makefile
+
 # Executables
 *.exe
 *.out

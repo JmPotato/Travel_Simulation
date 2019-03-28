@@ -45,4 +45,6 @@ void MainWindow::on_planButton_clicked() {
     ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
     ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
     ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
+    int cost=t.getPlanResult()->result.moenyCost;
+    ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
 }
