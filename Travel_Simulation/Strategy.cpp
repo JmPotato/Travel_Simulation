@@ -470,6 +470,17 @@ void Strategy::timeLimitStrategy(QString &log)
     // 用策略二计算出a和b两点的最短时间，如果用户输入的预期到达时间比最短时间还小，直接报错
     // 若用户输入比最短时间大，再遍历a和b两点之间的所有路线，每条路线都按最短时间计算(类似策略二）。选出所有路线中满足用户时间预期的路线，再从中选出花费最少的路线输出
 
+    if(depart==dest)
+    {
+        log.append(QString("您的出发城市和到达城市一样，请重新选择"));
+        return;
+    }
+    if(expectedDestTime<expectedDepartTime)
+    {
+        log.append(QString("您的期望到达时间选择有误，请重新选择"));
+        return;
+    }
+
     /* 连接数据库 */
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
