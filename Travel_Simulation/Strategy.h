@@ -15,14 +15,21 @@ public:
 
     /* 策略开始的驱动函数 */
     void startStrategy(QString &log);
+<<<<<<< HEAD
+=======
+    MyTime departTime;
+    MyTime destTime;
+    MyTime expectedDepartTime;
+    MyTime expectedDestTime;
+    Result result;
+private:
+>>>>>>> 163ef15664f65a43d28aceeb05a119676182c637
 
     /* 需要与其他类交互的数据结构 */
     MyTime departTime;              // 出发时间
     MyTime destTime;                // 到达时间
     MyTime expectedDepartTime;      // 期望的出发时间
     MyTime expectedDestTime;        // 期望的到达时间
-    /* 策略产生的结果 */
-    Result result;  // 不一定会被使用
 private:
     /* 出发地与目的地 */
     string depart;
@@ -30,6 +37,13 @@ private:
 
     /* 策略类型 */
     int type;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 163ef15664f65a43d28aceeb05a119676182c637
+
+    /* 策略产生的结果 */
+    Result result;  // 不一定会被使用
 
     /* 三种策略分别对应的算法函数 */
     void cheapestStrategy(QString &log);
