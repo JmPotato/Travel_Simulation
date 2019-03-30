@@ -790,7 +790,10 @@ void Strategy::timeLimitStrategy(QString &log)
          delete[] visited;
 
          if(destTime>expectedDestTime)
-             cout<<"你期望的到达时间太早，系统无法匹配路线！";
+         {
+             result.moenyCost=0;
+             log.append(QString("你期望的到达时间太早，系统无法匹配路线！"));
+         }
          else
          {
  //-----------------------------再遍历a和b两点之间的所有路线，每条路线都按最短时间计算
@@ -998,10 +1001,6 @@ void Strategy::timeLimitStrategy(QString &log)
              log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
          }
      }
-
-
-
-
      /* 关闭数据库 */
      db.close();
 }
