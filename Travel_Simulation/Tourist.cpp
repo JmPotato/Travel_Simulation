@@ -1,5 +1,12 @@
 #include "Tourist.h"
 
+/**
+ * @brief Tourist::Tourist
+ * @param start
+ * @param end
+ * @param strategy
+ * @author ghz
+ */
 Tourist::Tourist(string start, string end, int strategy) {
 //    id = 0;
     depart = start;
@@ -10,6 +17,14 @@ Tourist::Tourist(string start, string end, int strategy) {
     expectedDestTime.minute = 0;
 }
 
+/**
+ * @brief Tourist::Tourist
+ * @param start
+ * @param end
+ * @param startTime
+ * @param strategy
+ * @author ghz
+ */
 Tourist::Tourist(string start, string end, MyTime startTime, int strategy) {
 //    id = 0;
     depart = start;
@@ -18,6 +33,15 @@ Tourist::Tourist(string start, string end, MyTime startTime, int strategy) {
     expectedDepartTime = startTime;
 }
 
+/**
+ * @brief Tourist::Tourist
+ * @param start
+ * @param end
+ * @param startTime
+ * @param endTime
+ * @param strategy
+ * @author ghz
+ */
 Tourist::Tourist(string start, string end, MyTime startTime, MyTime endTime, int strategy) {
 //    id = 0;
     depart = start;
@@ -27,36 +51,74 @@ Tourist::Tourist(string start, string end, MyTime startTime, MyTime endTime, int
     expectedDestTime = endTime;
 }
 
+/**
+ * @brief Tourist::getId
+ * @return
+ * @author ghz
+ */
 unsigned short Tourist::getId() {
     return id;
 }
 
+/**
+ * @brief Tourist::getDepart
+ * @return
+ * @author ghz
+ */
 string Tourist::getDepart() {
     return depart;
 }
 
+/**
+ * @brief Tourist::getDest
+ * @return
+ * @author ghz
+ */
 string Tourist::getDest() {
     return dest;
 }
 
+/**
+ * @brief Tourist::getType
+ * @return
+ * @author ghz
+ */
 int Tourist::getType() {
     return type;
 }
 
+/**
+ * @brief Tourist::getLocation
+ * @return
+ * @author ghz
+ */
 string Tourist::getLocation() {
     return location;
 }
 
+/**
+ * @brief Tourist::getStrategy
+ * @author ghz
+ */
 void Tourist::getStrategy() {
     planResult = new Strategy(type, depart, dest, expectedDepartTime, expectedDestTime);
     planResult->startStrategy(log);
 }
 
-
+/**
+ * @brief Tourist::getPlanResult
+ * @return
+ * @author ghz
+ */
 Strategy *Tourist::getPlanResult() {
     return planResult;
 }
 
+/**
+ * @brief Tourist::getLog
+ * @return
+ * @author ghz
+ */
 QString Tourist::getLog() {
     return log;
 }

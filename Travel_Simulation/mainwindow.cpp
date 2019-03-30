@@ -3,12 +3,19 @@
 #include "Strategy.h"
 #include "Tourist.h"
 
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ * @author ghz
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->startTime->setDate(QDate::currentDate());
+    ui->endTime->setDate(QDate::currentDate());
+    ui->expectedTime->setDate(QDate::currentDate());
     ui->endTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
@@ -18,14 +25,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->destinationBox->addItems(cityList);
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/**
+ * @brief MainWindow::on_planButton_clicked
+ * @author ghz
+ */
 void MainWindow::on_planButton_clicked() {
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, ui->strategyBox->currentIndex() + 1);
+    MyTime expectedEndTime(ui->expectedTime->date().day() - ui->expectedTime->date().day(), ui->expectedTime->time().hour(), ui->expectedTime->time().minute());
+    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime,ui->strategyBox->currentIndex() + 1);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
     MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;

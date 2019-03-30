@@ -1,17 +1,21 @@
 #include "Graph.h"
 #include <iostream>
-#include <QStack>
+
 using std::cout;
 using std::endl;
-//成员函数的实现
 
+/**
+ * @brief Graph::Graph
+ * @param cityNum
+ * @author hyd
+ *
+ * 实例化一个 Graph 类，为它里面的结构分配内存，并初始化
+ */
 Graph::Graph(unsigned long cityNum)
 {
-    //string v1,v2;       //两个城市
-    //int w;              //权值（时间或价格）
     vexnum = cityNum;
 	
-	//动态申请内存
+    // 动态申请内存
     matrix = new int*[vexnum];
     for(unsigned long i = 0; i < vexnum; i++)
         matrix[i] = new int[vexnum];
@@ -20,23 +24,20 @@ Graph::Graph(unsigned long cityNum)
     for(unsigned long i = 0; i < vexnum; i++)
         timeTable[i] = new MyTime[vexnum];
 
-    //均初始化为极大值MaxInt
+    // 均初始化为极大值MaxInt
     for(unsigned long  i = 0; i < vexnum; i++)
         for(unsigned long j = 0;j < vexnum; j++)
         {
             matrix[i][j] = MaxInt;
         }
-	//构造邻接矩阵
-//	for(int k=0;k<vexnum;k++)
-//	{
-//		cin>>v1>>v2>>w;
-//		i=locateVex(v1);
-//		j=locateVex(v1);
-//		matrix[i][j]=w;
-//	}
 }
 
-//析构函数，释放内存
+/**
+ * @brief Graph::~Graph
+ * @author hyd
+ *
+ * 释放类中分配了的内存
+ */
 Graph::~Graph()
 {
     for(unsigned long i = 0; i < vexnum;i++)
@@ -44,13 +45,14 @@ Graph::~Graph()
     delete[] matrix;
 }
 
+/**
+ * @brief Graph::locateVex
+ * @param city
+ * @return 某城市对应的序号
+ * @author hyd
+ */
 long Graph::locateVex(string city)
 {
-
-//	int index;
-//	for(index = 0; index < vexnum;index++)
-//		if(vexs[index] == city)
-//			return index;
     vector<string>::iterator index;
     for (index = vexs.begin(); index != vexs.end(); index++ )
         if (*index == city)
@@ -58,6 +60,13 @@ long Graph::locateVex(string city)
     return 0;
 }
 
+/**
+ * @brief Graph::getValue
+ * @param city1
+ * @param city2
+ * @return 邻接矩阵中某点值
+ * @author hyd
+ */
 int Graph::getValue(string city1,string city2)
 {
     long i = locateVex(city1);
@@ -65,6 +74,13 @@ int Graph::getValue(string city1,string city2)
     return matrix[i][j];
 }
 
+/**
+ * @brief Graph::getTimeTableValue
+ * @param city1
+ * @param city2
+ * @return 时间矩阵某店的值
+ * @author hzy
+ */
 MyTime Graph::getTimeTableValue(std::string city1, std::string city2)
 {
     long i = locateVex(city1);
@@ -72,11 +88,24 @@ MyTime Graph::getTimeTableValue(std::string city1, std::string city2)
     return timeTable[i][j];
 }
 
+/**
+ * @brief Graph::getVex
+ * @param i
+ * @return 序号i对应的某城市
+ * @author hzy
+ */
 std::string Graph::getVex(long i)
 {
     return vexs[i];
 }
 
+/**
+ * @brief Graph::setValue
+ * @param city1
+ * @param city2
+ * @param value
+ * @author hyd
+ */
 void Graph::setValue(string city1,string city2,int value)
 {
     long i = locateVex(city1);
@@ -84,6 +113,13 @@ void Graph::setValue(string city1,string city2,int value)
     matrix[i][j] = value;
 }
 
+/**
+ * @brief Graph::setTimeTableValue
+ * @param city1
+ * @param city2
+ * @param value
+ * @author hzy
+ */
 void Graph::setTimeTableValue(std::string city1, std::string city2, MyTime value)
 {
     long i = locateVex(city1);
@@ -91,11 +127,20 @@ void Graph::setTimeTableValue(std::string city1, std::string city2, MyTime value
     timeTable[i][j] = value;
 }
 
+/**
+ * @brief Graph::setVexsList
+ * @param list
+ * @author hzy
+ */
 void Graph::setVexsList(vector<std::string> list)
 {
     vexs = list;
 }
 
+/**
+ * @brief Graph::printMatrix
+ * @author hzy
+ */
 void Graph::printMatrix()
 {
     for (unsigned long i = 0; i < vexnum; i++) {
@@ -107,16 +152,30 @@ void Graph::printMatrix()
     }
 }
 
+/**
+ * @brief Graph::shortestPathDJ
+ * @param Dep
+ * @param Dest
+ * @param result
+ * @author hzy
+ *
+ * 策略一所用的最短路算法
+ */
 void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
 {
-    long *tempPath = new long[vexnum];
-    bool *s = new bool[vexnum];
-    int *d = new int[vexnum];
-    // Dijkstra Algorithm
-    unsigned long n = vexnum;
+    /* 需要用到的数据 */
+    unsigned long w, v;                 // 临时变量
+    int min;                            // 通过迭代算出来的最小值
+    Path path;                          // 临时存储一条路径
+    long *tempPath = new long[vexnum];  // 临时存储
+    bool *s = new bool[vexnum];         // 辅助数组
+    int *d = new int[vexnum];           // 辅助数组
+    unsigned long n = vexnum;           // 辅助变量
     long v0 = locateVex(Dep);
     long vt = locateVex(Dest);
-    unsigned long w, v;
+
+    // Dijkstra Algorithm
+    /* 初始化 */
     for (v = 0; v < n; v++) {
         s[v] = false;
         d[v] = matrix[v0][v];
@@ -125,7 +184,8 @@ void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
     }
     s[v0] = true;
     d[v0] = 0;
-    int min;
+
+    /* 最短路算法运算部分 */
     for (unsigned long i = 1; i < n; i++) {
         min = MaxInt;
         for (w = 0; w < n; w++)
@@ -141,8 +201,7 @@ void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
             }
     }
 
-    Path path;
-
+    /* 提取路径 */
     while (tempPath[vt] != -1) {
         long pre = tempPath[vt];
         path.start = getVex(pre);
@@ -151,83 +210,12 @@ void Graph::shortestPathDJ(string Dep, string Dest, Result &result)
         result.route.push_back(path);
         vt = pre;
     }
-
     vt = locateVex(Dest);
     result.moenyCost = d[vt];
     std::reverse(result.route.begin(), result.route.end());
 
+    /* 释放内存 */
     delete [] tempPath;
     delete [] s;
     delete [] d;
-
 }
-////city的第一个可访问的邻接点
-//int Graph::findNext(QString city)
-//{
-//    for(unsigned long i=0;i<vexnum;i++)
-//    {
-//        if (!visited[locateVex(city.toStdString())][i + 1] && !visited[i][0])
-//           return i;
-//    }
-//    return -1;
-//}
-
-////找到两个城市之间的所有路径，保存到allPath中，
-//void Graph::findAllPath(QString Dep, QString Dest)
-//{
-//    visited = new bool*[vexnum];
-//    for(unsigned long i=0;i<vexnum;i++)
-//        visited[i]=new bool[vexnum+1];
-
-//    QStack<QString> s;
-//    s.push(Dep);
-//    visited[locateVex(Dep.toStdString())][0]=true;
-//    QString top;
-//    int n;
-//    QString next;
-
-//    while(!s.empty())
-//    {
-//        top=s.top();
-//        if(top==Dest)
-//        {
-//            //将一条路径保存到allPath
-//            vector<QString> onePath;
-//            QStack<QString> temp = s;
-//            while (!temp.empty())
-//            {
-//                QString _city = s.top();
-//                onePath.push_back(_city);
-//                temp.pop();
-//            }
-//            reverse(onePath.begin(), onePath.end());
-//            allPath.push_back(onePath);
-
-//            s.pop();
-//            visited[locateVex(top.toStdString())][0] = false;
-//        }
-//        else
-//        {
-//            n =findNext(top);
-//            next = QString::fromStdString(vexs[n]);
-//            if (n != -1 && s.size()<4)
-//            {
-//               s.push(next);
-//               visited[locateVex(top.toStdString())][n + 1] = true;
-//               visited[n][0] = true;
-//            }
-//            else
-//            {
-//               s.pop();
-//               for (unsigned long i = 0; i < vexnum+1; i++)
-//                 visited[locateVex(top.toStdString())][i] = false;
-//            }
-//        }
-//    }
-//   for(unsigned long i=0;i<vexnum;i++)
-//       delete[] visited[i];
-//   delete visited;
-
-//}
-
-
