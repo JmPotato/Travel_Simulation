@@ -20,28 +20,8 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="16" column="0" colspan="4">
-       <widget class="QPushButton" name="simButton">
-        <property name="text">
-         <string>开始模拟</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="4">
-       <widget class="QListWidget" name="passList"/>
-      </item>
-      <item row="13" column="1" colspan="3">
-       <widget class="QLineEdit" name="budgetEdit"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="passLable">
-        <property name="text">
-         <string>途径地列表</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1" colspan="3">
-       <widget class="QDateTimeEdit" name="endTime"/>
+      <item row="0" column="1" colspan="3">
+       <widget class="QComboBox" name="departureBox"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="destinationLabel">
@@ -50,23 +30,50 @@
         </property>
        </widget>
       </item>
-      <item row="15" column="0" colspan="4">
+      <item row="3" column="0">
+       <widget class="QLabel" name="passLable">
+        <property name="text">
+         <string>途径地列表</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QComboBox" name="cityBox"/>
+      </item>
+      <item row="14" column="0">
+       <widget class="QLabel" name="budgetLabel">
+        <property name="text">
+         <string>预算金额</string>
+        </property>
+       </widget>
+      </item>
+      <item row="16" column="0" colspan="4">
        <widget class="QPushButton" name="planButton">
         <property name="text">
          <string>开始规划</string>
         </property>
        </widget>
       </item>
-      <item row="11" column="1" colspan="3">
-       <widget class="QDateTimeEdit" name="startTime"/>
+      <item row="15" column="1" colspan="3">
+       <widget class="QComboBox" name="strategyBox"/>
       </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QComboBox" name="departureBox"/>
-      </item>
-      <item row="13" column="0">
-       <widget class="QLabel" name="budgetLabel">
+      <item row="11" column="0">
+       <widget class="QLabel" name="startTimeLabel">
         <property name="text">
-         <string>预算金额</string>
+         <string>期望出发日期</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="4">
+       <widget class="QListWidget" name="passList"/>
+      </item>
+      <item row="14" column="1" colspan="3">
+       <widget class="QLineEdit" name="budgetEdit"/>
+      </item>
+      <item row="15" column="0">
+       <widget class="QLabel" name="strategyLabel">
+        <property name="text">
+         <string>规划策略</string>
         </property>
        </widget>
       </item>
@@ -77,6 +84,13 @@
         </property>
        </widget>
       </item>
+      <item row="13" column="0">
+       <widget class="QLabel" name="endTimeLabel">
+        <property name="text">
+         <string>实际到达时间</string>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="3">
        <widget class="QPushButton" name="deleteCity">
         <property name="text">
@@ -84,10 +98,10 @@
         </property>
        </widget>
       </item>
-      <item row="12" column="0">
-       <widget class="QLabel" name="endTimeLabel">
+      <item row="17" column="0" colspan="4">
+       <widget class="QPushButton" name="simButton">
         <property name="text">
-         <string>到达时间</string>
+         <string>开始模拟</string>
         </property>
        </widget>
       </item>
@@ -98,28 +112,24 @@
         </property>
        </widget>
       </item>
+      <item row="11" column="1" colspan="3">
+       <widget class="QDateTimeEdit" name="startTime"/>
+      </item>
       <item row="2" column="1" colspan="3">
        <widget class="QComboBox" name="destinationBox"/>
       </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QComboBox" name="cityBox"/>
+      <item row="13" column="1" colspan="3">
+       <widget class="QDateTimeEdit" name="endTime"/>
       </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="startTimeLabel">
+      <item row="12" column="0">
+       <widget class="QLabel" name="expectedEndTimeLabel">
         <property name="text">
-         <string>出发日期</string>
+         <string>期望到达时间</string>
         </property>
        </widget>
       </item>
-      <item row="14" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>规划策略</string>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="1" colspan="3">
-       <widget class="QComboBox" name="strategyBox"/>
+      <item row="12" column="1" colspan="3">
+       <widget class="QDateTimeEdit" name="expectedEndTime"/>
       </item>
      </layout>
     </item>

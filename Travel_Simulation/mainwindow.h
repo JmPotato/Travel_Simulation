@@ -21,6 +21,8 @@ public:
 private slots:
     void on_planButton_clicked();
 
+    void on_strategyBox_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 };

@@ -13,8 +13,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->startTime->setDate(QDate::currentDate());
+    ui->startTime->setDateTime(QDateTime::currentDateTime());
+    ui->expectedEndTime->setDateTime(QDateTime::currentDateTime());
+    ui->endTime->setDateTime(QDateTime::currentDateTime());
     ui->endTime->setEnabled(false);
+    ui->expectedEndTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
     ui->strategyBox->addItems(strategyList);
@@ -37,8 +40,8 @@ MainWindow::~MainWindow()
  */
 void MainWindow::on_planButton_clicked() {
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    MyTime expectedEndTime(ui->endTime->date().day() - ui->startTime->date().day(), ui->endTime->time().hour(), ui->endTime->time().minute());
-    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, ui->strategyBox->currentIndex() + 1);
+    MyTime expectedEndTime(ui->expectedEndTime->date().day() - ui->startTime->date().day(), ui->expectedEndTime->time().hour(), ui->expectedEndTime->time().minute());
+    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime, ui->strategyBox->currentIndex() + 1);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
     MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
@@ -47,4 +50,11 @@ void MainWindow::on_planButton_clicked() {
     ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
     int cost=t.getPlanResult()->result.moenyCost;
     ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
+}
+
+void MainWindow::on_strategyBox_currentIndexChanged(int index) {
+    if(index != 2)
+        ui->expectedEndTime->setEnabled(false);
+    else
+        ui->expectedEndTime->setEnabled(true);
 }
