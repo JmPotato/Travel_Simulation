@@ -14,8 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->startTime->setDate(QDate::currentDate());
-    ui->endTime->setDate(QDate::currentDate());
-    ui->expectedTime->setDate(QDate::currentDate());
     ui->endTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
@@ -39,8 +37,8 @@ MainWindow::~MainWindow()
  */
 void MainWindow::on_planButton_clicked() {
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    MyTime expectedEndTime(ui->expectedTime->date().day() - ui->expectedTime->date().day(), ui->expectedTime->time().hour(), ui->expectedTime->time().minute());
-    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime,ui->strategyBox->currentIndex() + 1);
+    MyTime expectedEndTime(ui->endTime->date().day() - ui->startTime->date().day(), ui->endTime->time().hour(), ui->endTime->time().minute());
+    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, ui->strategyBox->currentIndex() + 1);
     t.getStrategy();
     ui->logBrowser->setText(t.getLog());
     MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
