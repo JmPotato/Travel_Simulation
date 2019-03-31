@@ -130,7 +130,8 @@ void Strategy::cheapestStrategy(QString &log)
      MyTime timeUsed;
      unsigned short day = 0;
      /* 按照刚才算法产生的路径重新遍历，得出完整的全部需要的信息 */
-     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
+     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++)
+     {
         QString start = QString::fromStdString((*iter2).start);
         QString end = QString::fromStdString((*iter2).end);
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
@@ -545,7 +546,8 @@ void Strategy::timeLimitStrategy(QString &log)
      QString end;
      MyTime period, tempPeriod;
      QString codeNumber, methodTool;
-     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
+     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++)
+     {
         start = QString::fromStdString((*iter2).start);
         end = QString::fromStdString((*iter2).end);
         timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
@@ -605,12 +607,15 @@ void Strategy::timeLimitStrategy(QString &log)
          //----------------------------->>输出策略一的结果
          log.append(QString("出发地: %1    目的地: %2\n\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
          log.append("旅游线路:\n");
-         log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
-         log.append(QString("交通工具: %1    ").arg(methodTool));
-         log.append(QString("车次/航班号: %1\n").arg(codeNumber));
-         log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
-         log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
-         log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+         for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++){
+
+             log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
+             log.append(QString("交通工具: %1    ").arg(methodTool));
+             log.append(QString("车次/航班号: %1\n").arg(codeNumber));
+             log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
+             log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
+             log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+         }
          log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
          log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      }
