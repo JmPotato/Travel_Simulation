@@ -39,17 +39,31 @@ MainWindow::~MainWindow()
  * @author ghz
  */
 void MainWindow::on_planButton_clicked() {
-    MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    MyTime expectedEndTime(ui->expectedEndTime->date().day() - ui->startTime->date().day(), ui->expectedEndTime->time().hour(), ui->expectedEndTime->time().minute());
-    Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime, ui->strategyBox->currentIndex() + 1);
-    t.getStrategy();
-    ui->logBrowser->setText(t.getLog());
-    MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
-    ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
-    ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
-    ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
-    int cost=t.getPlanResult()->result.moenyCost;
-    ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
+    if (ui->departureBox->currentText() == ui->destinationBox->currentText())
+        ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
+    else {
+        MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
+        uint intervalTime = 0;
+        unsigned short day;
+        unsigned short hour;
+        unsigned short minute;
+        if (ui->expectedEndTime->dateTime().toTime_t() > ui->startTime->dateTime().toTime_t())
+            intervalTime = ui->expectedEndTime->dateTime().toTime_t() - ui->startTime->dateTime().toTime_t();
+        day = intervalTime / (24 * 60 * 60);
+        hour = (intervalTime % (24 * 60 * 60)) / (60 * 60);
+        minute = (intervalTime % (24 * 60 * 60)) % (60 * 60) / 60;
+        MyTime period(day, hour, minute);
+        MyTime expectedEndTime = startTime + period;
+        Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime, ui->strategyBox->currentIndex() + 1);
+        t.getStrategy();
+        ui->logBrowser->setText(t.getLog());
+        MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
+        ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
+        ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
+        ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
+        int cost=t.getPlanResult()->result.moenyCost;
+        ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
+    }
 }
 
 void MainWindow::on_strategyBox_currentIndexChanged(int index) {
