@@ -14,6 +14,7 @@ public:
     /* 构造与析构函数 */
     MyTime();
     MyTime(unsigned short d, unsigned short h, unsigned short m);
+    MyTime(QString timeString);
     MyTime(const MyTime &obj);
     ~MyTime();
 

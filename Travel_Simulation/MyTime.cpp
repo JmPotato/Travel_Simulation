@@ -48,6 +48,18 @@ MyTime::MyTime(unsigned short d, unsigned short h, unsigned short m) {
 
 /**
  * @brief MyTime::MyTime
+ * @param timeString
+ * @author hzy
+ */
+MyTime::MyTime(QString timeString) {
+    day = 0;
+    hour = timeString.section(":", 0, 0).toUShort();
+    minute = timeString.section(":", 1, 1).toUShort();
+    normalizeTime(day, hour, minute);
+}
+
+/**
+ * @brief MyTime::MyTime
  * @param obj
  * @author ghz
  */
