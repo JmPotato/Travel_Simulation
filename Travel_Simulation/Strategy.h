@@ -2,6 +2,7 @@
 #define STRATEGY_H
 
 #include <string>
+#include <QSqlDatabase>
 #include "Result.h"
 #include "MyTime.h"
 
@@ -12,6 +13,7 @@ class Strategy
 public:
     /* 构造函数 */
     Strategy(int t, string d1, string d2, MyTime expectedDepartT, MyTime expectedDestT);
+    ~Strategy();
 
     /* 策略开始的驱动函数 */
     void startStrategy(QString &log);
@@ -24,6 +26,7 @@ public:
     /* 策略产生的结果 */
     Result result;  // 不一定会被使用
 private:
+    QSqlDatabase db;
     /* 出发地与目的地 */
     string depart;
     string dest;

@@ -54,6 +54,7 @@ void MainWindow::on_planButton_clicked() {
         minute = (intervalTime % (24 * 60 * 60)) % (60 * 60) / 60;
         MyTime period(day, hour, minute);
         MyTime expectedEndTime = startTime + period;
+//        cout << expectedEndTime.day << "天" << expectedEndTime.hour << "时" << expectedEndTime.minute << "分\n";
         Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime, ui->strategyBox->currentIndex() + 1);
         t.getStrategy();
         ui->logBrowser->setText(t.getLog());

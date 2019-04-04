@@ -32,6 +32,17 @@ Strategy::Strategy(int t, string d1, string d2, MyTime expectedDepartT, MyTime e
     result.timeCost.hour = 0;
     result.timeCost.minute = 0;
     result.moenyCost = 0;
+    /* 连接数据库 */
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
+    if (!db.open())
+        cout << "Failed to connect to database";
+}
+
+Strategy::~Strategy()
+{
+    /* 关闭数据库 */
+    db.close();
 }
 
 /**
@@ -65,12 +76,6 @@ void Strategy::startStrategy(QString &log)
  */
 void Strategy::cheapestStrategy(QString &log)
 {
-    /* 连接数据库 */
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
-    if (!db.open())
-        log.append("Failed to connect to database\n");
 
     /* 配置接口 */
     QSqlQuery query(db);
@@ -194,9 +199,6 @@ void Strategy::cheapestStrategy(QString &log)
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      // 输出结束
-
-     /* 关闭数据库 */
-     db.close();
 }
 
 /**
@@ -245,12 +247,6 @@ void incOneNumber(vector<int> &oneNumber, int radix)
  */
 void Strategy::fastestStrategy(QString &log)
 {
-    /* 连接数据库 */
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
-    if (!db.open())
-        log.append("Failed to connect to database\n");
 
     /* 配置数据库接口 */
     QSqlQuery query(db);
@@ -493,13 +489,6 @@ void Strategy::timeLimitStrategy(QString &log)
         return;
     }
 
-    /* 连接数据库 */
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
-    if (!db.open())
-        log.append("Failed to connect to database\n");
-
     /* 配置接口 */
     QSqlQuery query(db);
     query.exec("select * from time_table");
@@ -610,7 +599,7 @@ void Strategy::timeLimitStrategy(QString &log)
 
      if(destTime < expectedDestTime)
      {
-        day = 0;
+         day = 0;
          //----------------------------->>输出策略一的结果
          for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
             QString start = QString::fromStdString((*iter2).start);
@@ -838,6 +827,7 @@ void Strategy::timeLimitStrategy(QString &log)
          }
 
         else {
+
             for (unsigned long i = 0; i < cityNum; i++)
                 for (unsigned long j = 0; j < cityNum + 1; j++)
                     visited[i][j] = false;
@@ -902,7 +892,6 @@ void Strategy::timeLimitStrategy(QString &log)
 
                     int radix = maxLen;
                     vector<int> oneNumber(allMethodForOneRoute.size(), 0);
-
                     while (oneNumber[0] != radix) {
                         /* 临时存储一个结果 */
                         Result oneResult;
@@ -911,9 +900,7 @@ void Strategy::timeLimitStrategy(QString &log)
                         oneResult.timeCost.hour = 0;
                         oneResult.timeCost.minute = 0;
                         oneResult.moenyCost = 0;
-                        endTime.day = 0;
-                        endTime.hour = 0;
-                        endTime.minute = 0;
+                        endTime = expectedDepartTime;
                         currentTime = endTime;
                         for (unsigned long index = 0; index < oneNumber.size(); index++) {
                             if (allMethodForOneRoute[index].size() - 1 < oneNumber[index]) {
@@ -939,12 +926,14 @@ void Strategy::timeLimitStrategy(QString &log)
                             oneResult.timeCost = endTime - expectedDepartTime;
                         }
 
-                        if (oneResult.moenyCost < result.moenyCost) {
+                        if (oneResult.moenyCost < result.moenyCost && !(endTime > expectedDestTime)) {
                             result = oneResult;
                             for (auto path : oneResult.route)
                                 cout << path.start << "->" << path.end << " ";
                             cout << result.timeCost.day << "天" << result.timeCost.hour << "时" << result.timeCost.minute << "分   ";
-                            cout << result.moenyCost << "元" << endl;
+                            cout << result.moenyCost << "元";
+                            cout << "   End Time:" << endTime.day << " " << endTime.hour << " " << endTime.minute << endl;
+
                         }
 
                         incOneNumber(oneNumber, radix);
@@ -988,18 +977,29 @@ void Strategy::timeLimitStrategy(QString &log)
                 }
             }
             destTime = expectedDepartTime + result.timeCost;          // 生成到达时
-            /* 释放内存 */
+            /* 向用户交互界面返回结果信息 */
+            log.append("旅游线路:\n");
+            for (vector<Path>::iterator it = result.route.begin(); it != result.route.end(); it++) {
+                log.append(QString("路线: %1--->%2\n").arg(QString::fromStdString(it->start)).arg((QString::fromStdString(it->end))));
+                log.append(QString("交通工具: %1    ").arg(it->tool));
+                log.append(QString("车次/航班号: %1\n").arg(it->number));
+                log.append(QString("花费金额: %1\n").arg(it->moneyCost));
+                if (it->endTime.day == 0)
+                    log.append(QString("出发时间: %1时%2分 到达时间: %3时%4分\n").arg(it->startTime.hour).arg(it->startTime.minute).arg(it->endTime.hour).arg(it->endTime.minute));
+                else
+                    log.append(QString("到达时间: 第%3天%4时%5分\n").arg(it->endTime.day + 1).arg(it->endTime.hour).arg(it->endTime.minute));
+                log.append(QString("用时: %1天%2时%3分\n\n").arg(it->timeCost.day).arg(it->timeCost.hour).arg(it->timeCost.minute));
+            }
+            log.append(QString("总用时: %1天%2时%3分\n").arg(result.timeCost.day).arg(result.timeCost.hour).arg(result.timeCost.minute));
+            log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
 
         }
 
+        /* 释放内存 */
         for (unsigned long i=0; i < cityNum;i++)
             delete[] visited[i];
         delete[] visited;
     }
-
-
-     /* 关闭数据库 */
-     db.close();
 }
 
 
