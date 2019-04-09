@@ -15,14 +15,38 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="1">
-     <widget class="QLabel" name="mapBrowser">
-      <property name="text">
-       <string>MAP LOADING</string>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="log">
+       <attribute name="title">
+        <string>日志输出</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTextBrowser" name="logBrowser"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="map">
+       <attribute name="title">
+        <string>模拟地图</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="mapBrowser">
+          <property name="text">
+           <string>MAP LOADING</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
-    <item row="0" column="3" rowspan="2">
+    <item row="0" column="1" rowspan="2" colspan="2">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1" colspan="3">
        <widget class="QComboBox" name="departureBox"/>
@@ -136,9 +160,6 @@
        <widget class="QDateTimeEdit" name="expectedEndTime"/>
       </item>
      </layout>
-    </item>
-    <item row="1" column="1">
-     <widget class="QTextBrowser" name="logBrowser"/>
     </item>
    </layout>
   </widget>

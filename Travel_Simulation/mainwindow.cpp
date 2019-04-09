@@ -25,8 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->departureBox->addItems(cityList);
     ui->destinationBox->addItems(cityList);
 
+    ui->tabWidget->setCurrentIndex(0);
     QImage mapImage("China.jpg");
-    mapImage  = mapImage.scaled(QSize(800,400), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
 }
