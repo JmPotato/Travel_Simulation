@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
     ui->departureBox->addItems(cityList);
     ui->destinationBox->addItems(cityList);
+
+    QImage mapImage("China.jpg");
+    mapImage  = mapImage.scaled(QSize(800,400), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
+    ui->mapBrowser->setScaledContents(true);
 }
 
 /**

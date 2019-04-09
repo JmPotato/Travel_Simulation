@@ -6,19 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>664</width>
-    <height>445</height>
+    <width>791</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Travel Simulation</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QTextBrowser" name="logBrowser"/>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="1">
+     <widget class="QLabel" name="mapBrowser">
+      <property name="text">
+       <string>MAP LOADING</string>
+      </property>
+     </widget>
     </item>
-    <item>
+    <item row="0" column="3" rowspan="2">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1" colspan="3">
        <widget class="QComboBox" name="departureBox"/>
@@ -132,6 +136,9 @@
        <widget class="QDateTimeEdit" name="expectedEndTime"/>
       </item>
      </layout>
+    </item>
+    <item row="1" column="1">
+     <widget class="QTextBrowser" name="logBrowser"/>
     </item>
    </layout>
   </widget>
