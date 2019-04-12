@@ -66,7 +66,11 @@
        </widget>
       </item>
       <item row="5" column="0" colspan="2">
-       <widget class="QComboBox" name="cityBox"/>
+       <widget class="QComboBox" name="cityBox">
+        <property name="currentText">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item row="14" column="0">
        <widget class="QLabel" name="budgetLabel">
@@ -93,7 +97,13 @@
        </widget>
       </item>
       <item row="4" column="0" colspan="4">
-       <widget class="QListWidget" name="passList"/>
+       <widget class="QListWidget" name="passList">
+        <item>
+         <property name="text">
+          <string>将按照以下城市添加的顺序途经所有城市</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="14" column="1" colspan="3">
        <widget class="QLineEdit" name="budgetEdit"/>

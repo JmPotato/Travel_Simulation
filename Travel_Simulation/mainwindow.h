@@ -23,6 +23,10 @@ private slots:
 
     void on_strategyBox_currentIndexChanged(int index);
 
+    void on_addCity_clicked();
+
+    void on_deleteCity_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

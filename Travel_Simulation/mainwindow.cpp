@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include "Strategy.h"
 #include "Tourist.h"
+#include <QDebug>
+#include <QListWidgetItem>
+#include <QStringList>
 
 /**
  * @brief MainWindow::MainWindow
@@ -22,11 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
     ui->strategyBox->addItems(strategyList);
     QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
+    QStringList addCityList = {"请选择途经城市", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
     ui->departureBox->addItems(cityList);
     ui->destinationBox->addItems(cityList);
+    ui->cityBox->addItems(addCityList);
 
     ui->tabWidget->setCurrentIndex(0);
-    QImage mapImage("China.jpg");
+    QImage mapImage("China-O.jpg");
     mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
@@ -48,6 +53,17 @@ void MainWindow::on_planButton_clicked() {
     if (ui->departureBox->currentText() == ui->destinationBox->currentText())
         ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
     else {
+        int count = ui->passList->count();
+        if(count > 1)
+        {
+            QStringList passCity;
+            for(int i=1;i < count; i++)
+            {
+              QListWidgetItem *temp = ui->passList->item(i);
+              passCity.append((*temp).text());
+            }
+            //qDebug()<<passCity;
+        }
         MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
         uint intervalTime = 0;
         unsigned short day;
@@ -78,4 +94,20 @@ void MainWindow::on_strategyBox_currentIndexChanged(int index) {
         ui->expectedEndTime->setEnabled(false);
     else
         ui->expectedEndTime->setEnabled(true);
+}
+//途经城市列表添加城市
+void MainWindow::on_addCity_clicked()
+{
+    QString text = ui->cityBox->currentText();
+    //qDebug() << text;
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setText(text);
+    if (text != "请选择途经城市" )
+       ui->passList->addItem(item);
+}
+//途经城市列表删除城市
+void MainWindow::on_deleteCity_clicked()
+{
+    QListWidgetItem *currentItem = ui->passList->currentItem();
+    delete currentItem;
 }
