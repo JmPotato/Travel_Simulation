@@ -27,6 +27,7 @@ public:
 
     /* 从字符串读入一个时间并格式化 */
     void parseString(QString timeString);
+    void print();
 };
 
 #endif // MyTime_H

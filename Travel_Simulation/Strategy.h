@@ -35,9 +35,9 @@ private:
     int type;
 
     /* 三种策略分别对应的算法函数 */
-    void cheapestStrategy(QString &log);
-    void fastestStrategy(QString &log);
-    void timeLimitStrategy(QString &log);
+    Result cheapestStrategy(QString &log);
+    Result fastestStrategy(QString &log);
+    Result timeLimitStrategy(QString &log);
 };
 
 #endif // STRATEGY_H

@@ -150,3 +150,8 @@ void MyTime::parseString(QString timeString) {
     minute = timeString.section(":", 1, 1).toUShort();
     normalizeTime(day, hour, minute);
 }
+
+void MyTime::print()
+{
+    std::cout << day << "天" << hour << "时" << minute << "分" << std::endl;
+}

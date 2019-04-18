@@ -74,7 +74,7 @@ void Strategy::startStrategy(QString &log)
  *
  * 策略一算法函数
  */
-void Strategy::cheapestStrategy(QString &log)
+Result Strategy::cheapestStrategy(QString &log)
 {
 
     /* 配置接口 */
@@ -199,6 +199,7 @@ void Strategy::cheapestStrategy(QString &log)
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      // 输出结束
+     return result;
 }
 
 /**
@@ -245,7 +246,7 @@ void incOneNumber(vector<int> &oneNumber, int radix)
  * 采用深度优先搜索算法结合回溯算法，遍历所有有效路径（长度 < 4）
  * 从中选出用时最小的路径
  */
-void Strategy::fastestStrategy(QString &log)
+Result Strategy::fastestStrategy(QString &log)
 {
 
     /* 配置数据库接口 */
@@ -469,6 +470,7 @@ void Strategy::fastestStrategy(QString &log)
     for (unsigned long i=0; i < cityNum;i++)
         delete[] visited[i];
     delete[] visited;
+    return result;
 }
 
 /**
@@ -478,7 +480,7 @@ void Strategy::fastestStrategy(QString &log)
  *
  * 还没写
  */
-void Strategy::timeLimitStrategy(QString &log)
+Result Strategy::timeLimitStrategy(QString &log)
 {
     // 用策略一算出一个方案，看时间满不满足预期
     // 用策略二计算出a和b两点的最短时间，如果用户输入的预期到达时间比最短时间还小，直接报错
@@ -486,7 +488,7 @@ void Strategy::timeLimitStrategy(QString &log)
     if(expectedDestTime == expectedDepartTime)
     {
         log.append(QString("您的期望到达时间选择有误，请重新选择"));
-        return;
+        return result;
     }
 
     /* 配置接口 */
@@ -668,6 +670,7 @@ void Strategy::timeLimitStrategy(QString &log)
 
      else
      {
+
  //-----------------------------------------------------
          //运行策略二
          stack<string> s;                // 策略二算法运行时记录路径的栈
@@ -678,8 +681,6 @@ void Strategy::timeLimitStrategy(QString &log)
          string tempCity;                // 临时存储元素
          stack<string> tempS;            // 临时存储栈，便于提取栈中元素且不破坏原栈内容
          vector<string> tempCityPath;    // 临时存储找到的路径
-         vector<string> bestPath;        // 存储找到的最佳路径
-         MyTime minEndTime(10000, 10000, 10000); // 存储迭代过程中的最小到达时间
          unsigned long cityNum = cityList.size();// 存储城市个数
          bool **visited = new bool*[cityNum];    // 访问辅助数组，visited[i][j] 表示：
                                                  // j = 0: i 是否被访问过
@@ -692,137 +693,15 @@ void Strategy::timeLimitStrategy(QString &log)
              for (unsigned long j = 0; j < cityNum + 1; j++)
                  visited[i][j] = false;
 
-         /* 提高算法的运算效率，将终点放到前面来，以便先行入栈 */
-         long destIndex = findIndex(cityList, dest);
-         string temp = cityList[0];
-         cityList[0] = dest;
-         cityList[destIndex] = temp;
-
-         /* 初始化 result */
-         result.route.clear();
-         result.timeCost.day = 0;
-         result.timeCost.hour = 0;
-         result.timeCost.minute = 0;
-
-         /* 算法运算部分 */
-         s.push(depart);                                 // 出发地先行入栈
-         visited[findIndex(cityList, depart)][0] = true; // 已访问出发地
-         /* 搜索所有路径，并根据进行情况回溯 */
-         while(!s.empty())
+        QString tempString;
+        Result aResult = fastestStrategy(tempString);
+        aResult.timeCost.print();
+        expectedDestTime.print();
+        expectedDepartTime.print();
+        if(expectedDestTime < aResult.timeCost + expectedDepartTime)
          {
-             top = s.top();
-
-             /* 找到了一条从起点到终点的路径 */
-             if (top == dest)
-             {
-                 //count++;      
-                 /* 记录到达当前结点时的最佳时间 */
-                 MyTime endTime = expectedDepartTime;
-                 MyTime currentTime;
-
-                 /* 产生调试信息：搜索出的一条路径 */
-                 /* 并产生一个临时的 oneResult */
-                 tempCityPath.clear();
-                 tempS = s;
-                 //std::cout << count << ": ";
-                 while (!tempS.empty()) {
-                     tempCity = tempS.top();
-                     tempS.pop();
-                     tempCityPath.push_back(tempCity);
-                 }
-                 std::reverse(tempCityPath.begin(), tempCityPath.end());
-                 for (vector<string>::iterator it = tempCityPath.begin(); it != tempCityPath.end() - 1; it++) {
-
-                     Path onePath;                               // 临时存储一条路径
-
-                     /* 处理各种时间 */
-                     currentTime = endTime;
-                     currentTime.day = 0;
-                     MyTime minOnePathEndTime(1000, 1000, 1000);
-                     MyTime onePathStartTime;
-                     MyTime onePathUsedTime;
-                     MyTime onePathEndTime;
-
-                     /* 遍历两城市之间的时刻表 */
-                     bool flag = false;  // 判断是否有找到，如果没有，天数++
-                     query.exec(QString("select * from time_table where Dep='%1' and Dest='%2'").arg(QString::fromStdString(*it)).arg(QString::fromStdString(*(it + 1))));
-                     while (query.next()) {
-                         onePathStartTime.parseString(query.value("Dep_Time").toString());
-                         if (currentTime > onePathStartTime)
-                             continue;
-                         else {
-                             flag = true;
-                             onePathUsedTime.parseString(query.value("Time_Cost").toString());
-                             onePathEndTime = onePathStartTime + onePathUsedTime;
-                             if (onePathEndTime < minOnePathEndTime) {
-                                 minOnePathEndTime = onePathEndTime;
-                             }
-                         }
-                     }
-
-                     /* 没有找到，天数++，再遍历一遍时刻表*/
-                     if (!flag) {
-                         endTime.day += 1;
-                         endTime.hour = 0;
-                         endTime.minute = 0;
-                         it--;
-                     }
-
-                     /* 找到了，向 oneResult 中加入此条路径 */
-                     else {
-                         endTime.hour = 0; endTime.minute = 0;
-                         endTime = endTime + minOnePathEndTime;
-                     }
-                 }
-
-                 /* 更新最优值 */
-                 if (endTime < minEndTime) {
-                     minEndTime = endTime;
-                     bestPath = tempCityPath;
-                 }
-                 /* 回溯，搜索吓一条路径 */
-                 s.pop();
-                 visited[findIndex(cityList, dest)][0] = false;
-             }
-
-             /* 继续往下搜索 */
-             else
-             {
-                 for (long i = 0; i < cityList.size(); i++) {
-                     if (!visited[findIndex(cityList, top)][i + 1] && !visited[i][0]) {
-                         n = i;
-                         break;
-                     }
-                     else
-                         n = -1;
-                 }
-
-                 /* 搜索到了下一个结点 */
-                 if (n != -1 && s.size() < 4)
-                 {
-                    next = cityList[n];
-                    s.push(next);
-                    visited[findIndex(cityList, top)][n + 1] = true;
-                    visited[n][0] = true;
-                 }
-
-                 /* 如果没有找到下一个结点（此方向遍历结束）或路径过长（不可能时最优解了）*/
-                 /* 回溯，向另一个方向继续搜索下一条路径 */
-                 else
-                 {
-                    s.pop();
-                    for (unsigned long i = 0; i < cityNum + 1; i++)
-                      visited[findIndex(cityList, top)][i] = false;
-                 }
-             }
-         }
-         destTime = minEndTime;          // 生成到达时
-         /* 释放内存 */
-
-
-        if(destTime > expectedDestTime)
-         {
-             result.moenyCost=0;
+             cout << "!!!!" << endl;
+             result.moenyCost = 0;
              log.append(QString("你期望的到达时间太早，系统无法匹配路线！"));
          }
 
@@ -1000,6 +879,7 @@ void Strategy::timeLimitStrategy(QString &log)
             delete[] visited[i];
         delete[] visited;
     }
+     return result;
 }
 
 
