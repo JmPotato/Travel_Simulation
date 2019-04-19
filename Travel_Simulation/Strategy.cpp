@@ -204,6 +204,7 @@ Result Strategy::cheapestStrategy(QString &log)
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      // 输出结束
+     result.timeCost.print();
      return result;
 }
 
@@ -514,203 +515,204 @@ Result Strategy::timeLimitStrategy(QString &log)
     }
 
     log.append(QString("出发地: %1    目的地: %2\n\n").arg(QString::fromStdString(depart)).arg(QString::fromStdString(dest)));
-    /* 建立算法所需要的 Graph 类 */
-    Graph G(cityList.size());
-    G.setVexsList(cityList);
+    Result aResult;
+    QString tempString;
+    aResult = cheapestStrategy(tempString);
+//    /* 建立算法所需要的 Graph 类 */
+//    Graph G(cityList.size());
+//    G.setVexsList(cityList);
 
-    /* 产生调试信息：
-     * 打印算法所需要的以花费最少为权值的邻接矩阵
-     */
-    vector<string>::iterator i, j;
-    int value;
-    QString select;
-    for (i = cityList.begin(); i != cityList.end(); i++)
-        for (j = cityList.begin(); j != cityList.end(); j++) {
-            if (*i == *j);
-            else {
-                QString s1 = QString::fromStdString(*i);
-                QString s2 = QString::fromStdString(*j);
-                select = QString("select * from time_table where Dep='%1' and Dest='%2' order by Price asc limit 1").arg(s1).arg(s2);
-                query.exec(select);
-                query.first();
-                value = query.value("Price").toInt();
-                G.setValue(*i, *j, value);
-                QString MyTimeCost = query.value("Time_Cost").toString();
-                MyTime t1;
-                t1.day = 0;
-                t1.hour = MyTimeCost.section(":", 0, 0).toUShort();
-                t1.minute = MyTimeCost.section(":", 1, 1).toUShort();
-                G.setTimeTableValue(*i, *j, t1);
-            }
-        }
+//    /* 产生调试信息：
+//     * 打印算法所需要的以花费最少为权值的邻接矩阵
+//     */
+//    vector<string>::iterator i, j;
+//    int value;
+//    QString select;
+//    for (i = cityList.begin(); i != cityList.end(); i++)
+//        for (j = cityList.begin(); j != cityList.end(); j++) {
+//            if (*i == *j);
+//            else {
+//                QString s1 = QString::fromStdString(*i);
+//                QString s2 = QString::fromStdString(*j);
+//                select = QString("select * from time_table where Dep='%1' and Dest='%2' order by Price asc limit 1").arg(s1).arg(s2);
+//                query.exec(select);
+//                query.first();
+//                value = query.value("Price").toInt();
+//                G.setValue(*i, *j, value);
+//                QString MyTimeCost = query.value("Time_Cost").toString();
+//                MyTime t1;
+//                t1.day = 0;
+//                t1.hour = MyTimeCost.section(":", 0, 0).toUShort();
+//                t1.minute = MyTimeCost.section(":", 1, 1).toUShort();
+//                G.setTimeTableValue(*i, *j, t1);
+//            }
+//        }
 
-     G.shortestPathDJ(depart, dest, result);    // 调用算法
+//     G.shortestPathDJ(depart, dest, result);    // 调用算法
 
-     vector<Path>::iterator iter2;
-     MyTime timeUsed;
-     unsigned short day = 0;
-     /* 按照刚才算法产生的路径重新遍历，得出完整的全部需要的信息 */
-     QString start;
-     QString end;
-     MyTime period, tempPeriod;
-     QString codeNumber, methodTool;
-     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
-        start = QString::fromStdString((*iter2).start);
-        end = QString::fromStdString((*iter2).end);
-        timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
-        select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
-        query.exec(select);
-        query.first();
-        period.parseString(query.value("Dep_Time").toString());
-        while(query.next()) {
-            tempPeriod.parseString(query.value("Dep_Time").toString());
-            if(tempPeriod < period) {
-                period = tempPeriod;
-            }
-        }
-        if(start == QString::fromStdString(depart)) {
-            MyTime earliest = period;
-            query.first();
-            while(departTime > period) {
-                tempPeriod.parseString(query.value("Dep_Time").toString());
-                if(tempPeriod > period)
-                    period = tempPeriod;
-                if(!query.next())
-                    break;
-            }
-            if(departTime > period) {
-                departTime = earliest;
-                period = earliest;
-                departTime.day += 1;
-            } else {
-                departTime = period;
-            }
-            destTime = departTime + timeUsed;
-            day += destTime.day;
-        } else {
-            query.first();
-            while(query.next()) {
-                tempPeriod.parseString(query.value("Dep_Time").toString());
-                if(!(tempPeriod < destTime))
-                    period = tempPeriod;
-            }
-            destTime.day = 0;
-            if(destTime > period)
-                day += 1;
-            destTime = period + timeUsed;
-            day += destTime.day;
-        }
-     }
-     destTime.day = day;
-     timeUsed = destTime - expectedDepartTime;
-
-     if(destTime < expectedDestTime)
+//     vector<Path>::iterator iter2;
+//     MyTime timeUsed;
+//     unsigned short day = 0;
+//     /* 按照刚才算法产生的路径重新遍历，得出完整的全部需要的信息 */
+//     QString start;
+//     QString end;
+//     MyTime period, tempPeriod;
+//     QString codeNumber, methodTool;
+//     for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
+//        start = QString::fromStdString((*iter2).start);
+//        end = QString::fromStdString((*iter2).end);
+//        timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
+//        select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
+//        query.exec(select);
+//        query.first();
+//        period.parseString(query.value("Dep_Time").toString());
+//        while(query.next()) {
+//            tempPeriod.parseString(query.value("Dep_Time").toString());
+//            if(tempPeriod < period) {
+//                period = tempPeriod;
+//            }
+//        }
+//        if(start == QString::fromStdString(depart)) {
+//            MyTime earliest = period;
+//            query.first();
+//            while(departTime > period) {
+//                tempPeriod.parseString(query.value("Dep_Time").toString());
+//                if(tempPeriod > period)
+//                    period = tempPeriod;
+//                if(!query.next())
+//                    break;
+//            }
+//            if(departTime > period) {
+//                departTime = earliest;
+//                period = earliest;
+//                departTime.day += 1;
+//            } else {
+//                departTime = period;
+//            }
+//            destTime = departTime + timeUsed;
+//            day += destTime.day;
+//        } else {
+//            query.first();
+//            while(query.next()) {
+//                tempPeriod.parseString(query.value("Dep_Time").toString());
+//                if(!(tempPeriod < destTime))
+//                    period = tempPeriod;
+//            }
+//            destTime.day = 0;
+//            if(destTime > period)
+//                day += 1;
+//            destTime = period + timeUsed;
+//            day += destTime.day;
+//        }
+//     }
+//     destTime.day = day;
+//     timeUsed = destTime - expectedDepartTime;
+    aResult.timeCost.print();
+     if(/*destTime*/aResult.timeCost + expectedDepartTime < expectedDestTime)
      {
-         day = 0;
-         //----------------------------->>输出策略一的结果
-         for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
-            QString start = QString::fromStdString((*iter2).start);
-            QString end = QString::fromStdString((*iter2).end);
-            timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
-            select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
-            query.exec(select);
-            query.first();
-            MyTime period, tempPeriod;
-            QString codeNumber, methodTool;
-            period.parseString(query.value("Dep_Time").toString());
-            codeNumber = query.value("Number").toString();
-            methodTool = query.value("Tran").toString();
-            while(query.next()) {
-                tempPeriod.parseString(query.value("Dep_Time").toString());
-                if(tempPeriod < period) {
-                    period = tempPeriod;
-                    codeNumber = query.value("Number").toString();
-                    methodTool = query.value("Tran").toString();
-                }
-            }
-            if(start == QString::fromStdString(depart)) {
-                MyTime earliest = period;
-                query.first();
-                while(departTime > period) {
-                    tempPeriod.parseString(query.value("Dep_Time").toString());
-                    if(tempPeriod > period)
-                        period = tempPeriod;
-                    if(!query.next())
-                        break;
-                }
-                if(departTime > period) {
-                    departTime = earliest;
-                    period = earliest;
-                    departTime.day += 1;
-                } else {
-                    departTime = period;
-                }
-                destTime = departTime + timeUsed;
-                day += destTime.day;
-            } else {
-                query.first();
-                while(query.next()) {
-                    tempPeriod.parseString(query.value("Dep_Time").toString());
-                    if(!(tempPeriod < destTime))
-                        period = tempPeriod;
-                }
-                destTime.day = 0;
-                if(destTime > period)
-                    day += 1;
-                destTime = period + timeUsed;
-                day += destTime.day;
-            }
-            log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
-            log.append(QString("交通工具: %1    ").arg(methodTool));
-            log.append(QString("车次/航班号: %1\n").arg(codeNumber));
-            log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
-            log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
-            log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
-         }
-         destTime.day = day;
-         timeUsed = destTime - expectedDepartTime;
-         log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
-         log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
+//         day = 0;
+//         //----------------------------->>输出策略一的结果
+//         for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
+//            QString start = QString::fromStdString((*iter2).start);
+//            QString end = QString::fromStdString((*iter2).end);
+//            timeUsed = G.getTimeTableValue((*iter2).start, (*iter2).end);
+//            select = QString("select * from time_table where Dep='%1' and Dest='%2' and Price=%3 order by Time_Cost").arg(start).arg(end).arg((*iter2).moneyCost);
+//            query.exec(select);
+//            query.first();
+//            MyTime period, tempPeriod;
+//            QString codeNumber, methodTool;
+//            period.parseString(query.value("Dep_Time").toString());
+//            codeNumber = query.value("Number").toString();
+//            methodTool = query.value("Tran").toString();
+//            while(query.next()) {
+//                tempPeriod.parseString(query.value("Dep_Time").toString());
+//                if(tempPeriod < period) {
+//                    period = tempPeriod;
+//                    codeNumber = query.value("Number").toString();
+//                    methodTool = query.value("Tran").toString();
+//                }
+//            }
+//            if(start == QString::fromStdString(depart)) {
+//                MyTime earliest = period;
+//                query.first();
+//                while(departTime > period) {
+//                    tempPeriod.parseString(query.value("Dep_Time").toString());
+//                    if(tempPeriod > period)
+//                        period = tempPeriod;
+//                    if(!query.next())
+//                        break;
+//                }
+//                if(departTime > period) {
+//                    departTime = earliest;
+//                    period = earliest;
+//                    departTime.day += 1;
+//                } else {
+//                    departTime = period;
+//                }
+//                destTime = departTime + timeUsed;
+//                day += destTime.day;
+//            } else {
+//                query.first();
+//                while(query.next()) {
+//                    tempPeriod.parseString(query.value("Dep_Time").toString());
+//                    if(!(tempPeriod < destTime))
+//                        period = tempPeriod;
+//                }
+//                destTime.day = 0;
+//                if(destTime > period)
+//                    day += 1;
+//                destTime = period + timeUsed;
+//                day += destTime.day;
+//            }
+//            log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
+//            log.append(QString("交通工具: %1    ").arg(methodTool));
+//            log.append(QString("车次/航班号: %1\n").arg(codeNumber));
+//            log.append(QString("花费金额: %1\n").arg((*iter2).moneyCost));
+//            log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
+//            log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+//         }
+//         destTime.day = day;
+//         timeUsed = destTime - expectedDepartTime;
+//         log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
+//         log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      }
 
      else
      {
-
  //-----------------------------------------------------
          //运行策略二
-         stack<string> s;                // 策略二算法运行时记录路径的栈
-         string top;                     // 栈顶元素
-         long n;                         // 临时存储序号
-         string next;                    // 需要访问的下一个元素
-         //int count = 0;                  // 记录找到的所有路径的个数
-         string tempCity;                // 临时存储元素
-         stack<string> tempS;            // 临时存储栈，便于提取栈中元素且不破坏原栈内容
-         vector<string> tempCityPath;    // 临时存储找到的路径
-         unsigned long cityNum = cityList.size();// 存储城市个数
-         bool **visited = new bool*[cityNum];    // 访问辅助数组，visited[i][j] 表示：
-                                                 // j = 0: i 是否被访问过
-                                                 // j != 0 : 访问 i 之后 j 是否被访问郭
-         /* 为访问辅助矩阵分配内存 */
-         for(unsigned long i = 0; i < cityNum; i++)
-             visited[i] = new bool[cityNum + 1];
-         /* 初始化访问辅助矩阵 */
-         for (unsigned long i = 0; i < cityNum; i++)
-             for (unsigned long j = 0; j < cityNum + 1; j++)
-                 visited[i][j] = false;
-
-        QString tempString;
-        Result aResult = fastestStrategy(tempString);
+        aResult = fastestStrategy(tempString);
         aResult.timeCost.print();
         expectedDestTime.print();
         expectedDepartTime.print();
         if(expectedDestTime < aResult.timeCost + expectedDepartTime)
          {
-             cout << "!!!!" << endl;
+             //cout << "!!!!" << endl;
              result.moenyCost = 0;
              log.append(QString("你期望的到达时间太早，系统无法匹配路线！"));
          }
-
         else {
+            stack<string> s;                // 策略二算法运行时记录路径的栈
+            string top;                     // 栈顶元素
+            long n;                         // 临时存储序号
+            string next;                    // 需要访问的下一个元素
+            //int count = 0;                  // 记录找到的所有路径的个数
+            string tempCity;                // 临时存储元素
+            stack<string> tempS;            // 临时存储栈，便于提取栈中元素且不破坏原栈内容
+            vector<string> tempCityPath;    // 临时存储找到的路径
+            unsigned long cityNum = cityList.size();// 存储城市个数
+            bool **visited = new bool*[cityNum];    // 访问辅助数组，visited[i][j] 表示：
+                                                    // j = 0: i 是否被访问过
+                                                    // j != 0 : 访问 i 之后 j 是否被访问郭
+            /* 为访问辅助矩阵分配内存 */
+            for(unsigned long i = 0; i < cityNum; i++)
+                visited[i] = new bool[cityNum + 1];
+            /* 初始化访问辅助矩阵 */
+            for (unsigned long i = 0; i < cityNum; i++)
+                for (unsigned long j = 0; j < cityNum + 1; j++)
+                    visited[i][j] = false;
+
+
 
             for (unsigned long i = 0; i < cityNum; i++)
                 for (unsigned long j = 0; j < cityNum + 1; j++)
@@ -730,8 +732,6 @@ Result Strategy::timeLimitStrategy(QString &log)
                 /* 找到了一条从起点到终点的路径 */
                 if (top == dest)
                 {
-
-
 
                     MyTime endTime = expectedDepartTime;
                     MyTime currentTime = endTime;
@@ -877,12 +877,11 @@ Result Strategy::timeLimitStrategy(QString &log)
             log.append(QString("总用时: %1天%2时%3分\n").arg(result.timeCost.day).arg(result.timeCost.hour).arg(result.timeCost.minute));
             log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
 
+            /* 释放内存 */
+            for (unsigned long i=0; i < cityNum;i++)
+                delete[] visited[i];
+            delete[] visited;
         }
-
-        /* 释放内存 */
-        for (unsigned long i=0; i < cityNum;i++)
-            delete[] visited[i];
-        delete[] visited;
     }
      return result;
 }
