@@ -187,6 +187,11 @@ Result Strategy::cheapestStrategy(QString &log)
             destTime = period + timeUsed;
             day += destTime.day;
         }
+        iter2->tool = methodTool;
+        iter2->number = codeNumber;
+        iter2->startTime = period;
+        iter2->endTime = period + timeUsed;
+        iter2->timeCost = timeUsed;
         log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
         log.append(QString("交通工具: %1    ").arg(methodTool));
         log.append(QString("车次/航班号: %1\n").arg(codeNumber));
