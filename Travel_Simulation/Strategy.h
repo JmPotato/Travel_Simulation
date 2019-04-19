@@ -35,8 +35,8 @@ private:
     int type;
 
     /* 三种策略分别对应的算法函数 */
-    Result cheapestStrategy(QString &log);
-    Result fastestStrategy(QString &log);
+    Result cheapestStrategy(QString &log, string d1, string d2, MyTime expectedDepartT);
+    Result fastestStrategy(QString &log, string d1, string d2, MyTime expectedDepartT);
     Result timeLimitStrategy(QString &log);
 };
 
