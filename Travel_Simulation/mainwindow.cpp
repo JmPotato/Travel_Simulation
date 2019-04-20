@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
+    ui->passList->
 
     connect(this->ui->departureBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDepartCity()));
     connect(this->ui->destinationBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDestCity()));
@@ -148,8 +149,10 @@ void MainWindow::on_addCity_clicked()
 void MainWindow::on_deleteCity_clicked()
 {
     QListWidgetItem *currentItem = ui->passList->currentItem();
-    addedCities.removeAll((*currentItem).text().mid(0,2));
-    delete currentItem;
+    if (currentItem) {
+        addedCities.removeAll((*currentItem).text().mid(0,2));
+        delete currentItem;
+    }
 }
 
 void MainWindow::changeDepartCity()

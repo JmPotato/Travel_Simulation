@@ -109,7 +109,8 @@ void Strategy::startPassStrategy(QString &log)
  */
 Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime expectedDepartT)
 {
-
+    cout << "start ";
+    expectedDepartT.print();
     /* 配置接口 */
     QSqlQuery query(db);
     query.exec("select * from time_table");
@@ -232,16 +233,17 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
         log.append(QString("出发时间: %1时%2分    ").arg(period.hour).arg(period.minute));
         log.append(QString("用时: %1天%2时%3分\n\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      }
-     destTime.day = day;
+     destTime.day = day + expectedDepartT.day;
      timeUsed = destTime - expectedDepartT;
      result.timeCost = timeUsed;
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
      log.append(QString("---------------------------------------\n"));
      // 输出结束
-     result.timeCost.print();
+     //result.timeCost.print();
      result.destTime = destTime;
-
+     cout << "end ";
+      destTime.print();
      return result;
 }
 
@@ -787,46 +789,61 @@ Result Strategy::timeLimitStrategy(QString &log)
 
 Result Strategy::cheapestPassStrategy(QString &log)
 {
+    int totalMoneyCost = 0;
 
     int cityNumber = passCities.length();
     if(cityNumber == 0)
     {
         Result aResult = cheapestStrategy(log,depart,dest,expectedDepartTime);
+        totalMoneyCost += aResult.moenyCost;
+        result.moenyCost = totalMoneyCost;
         return aResult;
     }
     else if(cityNumber > 0 )
     {
         Result firstResult;
         firstResult = cheapestStrategy(log,depart,passCities.at(0).toStdString(),expectedDepartTime);
+        totalMoneyCost += firstResult.moenyCost;
         MyTime newDepartTime(0,passHours[0],0);
         newDepartTime = newDepartTime + firstResult.destTime;
+        cout << "new ";
+        newDepartTime.print();
         int i=0;
         if(cityNumber > 1)
         {
             for(; i<cityNumber-1; i++)
             {
                 Result middleResult = cheapestStrategy(log,passCities.at(i).toStdString(),passCities.at(i+1).toStdString(),newDepartTime);
+                totalMoneyCost += middleResult.moenyCost;
                 MyTime passTime(0,passHours[i+1],0);
                 newDepartTime = middleResult.destTime + passTime;
+                cout << "new ";
+                newDepartTime.print();
             }
         }
         Result lastResult = cheapestStrategy(log,passCities.at(i).toStdString(),dest,newDepartTime);
+        totalMoneyCost += lastResult.moenyCost;
+        result.moenyCost = totalMoneyCost;
         return lastResult;
     }
 }
 
 Result Strategy::fastestPassStrategy(QString &log)
 {
+    int totalMoneyCost = 0;
     int cityNumber = passCities.length();
     if(cityNumber == 0)
     {
-        Result result = cheapestStrategy(log,depart,dest,expectedDepartTime);
-        return result;
+        Result aResult = cheapestStrategy(log,depart,dest,expectedDepartTime);
+        totalMoneyCost += aResult.moenyCost;
+        result.moenyCost = totalMoneyCost;
+        return aResult;
     }
     else if(cityNumber > 0 )
     {
         Result firstResult;
         firstResult = fastestStrategy(log,depart,passCities.at(0).toStdString(),expectedDepartTime);
+        totalMoneyCost += firstResult.moenyCost;
         MyTime newDepartTime(0,passHours[0],0);
         newDepartTime = newDepartTime + firstResult.destTime;
         int i=0;
@@ -835,11 +852,14 @@ Result Strategy::fastestPassStrategy(QString &log)
             for(; i<cityNumber-1; i++)
             {
                 Result middleResult = fastestStrategy(log,passCities.at(i).toStdString(),passCities.at(i+1).toStdString(),newDepartTime);
+                totalMoneyCost += middleResult.moenyCost;
                 MyTime passTime(0,passHours[i+1],0);
                 newDepartTime = middleResult.destTime + passTime;
             }
         }
         Result lastResult = fastestStrategy(log,passCities.at(i).toStdString(),dest,newDepartTime);
+        totalMoneyCost += lastResult.moenyCost;
+        result.moenyCost = totalMoneyCost;
         return lastResult;
     }
 }

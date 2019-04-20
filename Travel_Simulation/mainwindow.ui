@@ -98,6 +98,9 @@
          <property name="text">
           <string>将按照添加顺序途经城市</string>
          </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
         </item>
        </widget>
       </item>
