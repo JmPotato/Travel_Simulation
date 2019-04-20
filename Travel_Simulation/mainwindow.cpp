@@ -141,6 +141,7 @@ void MainWindow::on_addCity_clicked()
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(text);
         ui->passList->addItem(item);
+        ui->passList->setFocus();
     }
 }
 //途经城市列表删除城市
