@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QMainWindow>
+#include <QSet>
+#include <QString>
 
 namespace Ui {
 class MainWindow;
@@ -26,9 +28,14 @@ private slots:
     void on_addCity_clicked();
 
     void on_deleteCity_clicked();
+    void changeDepartCity();
+    void changeDestCity();
 
 private:
     Ui::MainWindow *ui;
+    QList<QString> addedCities;
+    QString departCity;
+    QString destCity;
 };
 
 #endif // MAINWINDOW_H

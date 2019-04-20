@@ -39,6 +39,27 @@ Strategy::Strategy(int t, string d1, string d2, MyTime expectedDepartT, MyTime e
         cout << "Failed to connect to database";
 }
 
+Strategy::Strategy(int t, std::string d1, std::string d2, QStringList cities, vector<int> hours, MyTime expectedDepartT, MyTime expectedDestT)
+{
+    type = t;
+    depart = d1;
+    dest = d2;
+    passCities = cities;
+    passHours = hours;
+    departTime = expectedDepartT;
+    expectedDepartTime = expectedDepartT;
+    expectedDestTime = expectedDestT;
+    result.timeCost.day = 0;
+    result.timeCost.hour = 0;
+    result.timeCost.minute = 0;
+    result.moenyCost = 0;
+    /* 连接数据库 */
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(QDir::currentPath() + QString("/travel_query.db"));
+    if (!db.open())
+        cout << "Failed to connect to database";
+}
+
 Strategy::~Strategy()
 {
     /* 关闭数据库 */
@@ -63,6 +84,18 @@ void Strategy::startStrategy(QString &log)
             break;
         case 3:
             timeLimitStrategy(log);
+            break;
+    }
+}
+
+void Strategy::startPassStrategy(QString &log)
+{
+    switch (type) {
+        case 1:
+            cheapestPassStrategy(log);
+            break;
+        case 2:
+            fastestPassStrategy(log);
             break;
     }
 }
@@ -125,7 +158,7 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
         }
     // G.printMatrix();
     /* ----------------------------------------------------------------------------- */
-
+     result.route.clear();
      G.shortestPathDJ(d1, d2, result);    // 调用算法
 
      /* 产生交互界面所需要的结果信息 */
@@ -204,8 +237,11 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
      result.timeCost = timeUsed;
      log.append(QString("区间用时: %1天%2时%3分\n").arg(timeUsed.day).arg(timeUsed.hour).arg(timeUsed.minute));
      log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
+     log.append(QString("---------------------------------------\n"));
      // 输出结束
      result.timeCost.print();
+     result.destTime = destTime;
+
      return result;
 }
 
@@ -471,12 +507,14 @@ Result Strategy::fastestStrategy(QString &log, string d1, string d2, MyTime expe
     }
     log.append(QString("总用时: %1天%2时%3分\n").arg(result.timeCost.day).arg(result.timeCost.hour).arg(result.timeCost.minute));
     log.append(QString("总花费金额: %1\n").arg(result.moenyCost));
+    log.append(QString("---------------------------------------\n"));
     destTime = minEndTime;          // 生成到达时间
 
     /* 释放内存 */
     for (unsigned long i=0; i < cityNum;i++)
         delete[] visited[i];
     delete[] visited;
+    result.destTime = destTime;
     return result;
 }
 
@@ -744,7 +782,65 @@ Result Strategy::timeLimitStrategy(QString &log)
             delete[] visited;
         }
     }
-     return result;
+    return result;
 }
 
+Result Strategy::cheapestPassStrategy(QString &log)
+{
+
+    int cityNumber = passCities.length();
+    if(cityNumber == 0)
+    {
+        Result aResult = cheapestStrategy(log,depart,dest,expectedDepartTime);
+        return aResult;
+    }
+    else if(cityNumber > 0 )
+    {
+        Result firstResult;
+        firstResult = cheapestStrategy(log,depart,passCities.at(0).toStdString(),expectedDepartTime);
+        MyTime newDepartTime(0,passHours[0],0);
+        newDepartTime = newDepartTime + firstResult.destTime;
+        int i=0;
+        if(cityNumber > 1)
+        {
+            for(; i<cityNumber-1; i++)
+            {
+                Result middleResult = cheapestStrategy(log,passCities.at(i).toStdString(),passCities.at(i+1).toStdString(),newDepartTime);
+                MyTime passTime(0,passHours[i+1],0);
+                newDepartTime = middleResult.destTime + passTime;
+            }
+        }
+        Result lastResult = cheapestStrategy(log,passCities.at(i).toStdString(),dest,newDepartTime);
+        return lastResult;
+    }
+}
+
+Result Strategy::fastestPassStrategy(QString &log)
+{
+    int cityNumber = passCities.length();
+    if(cityNumber == 0)
+    {
+        Result result = cheapestStrategy(log,depart,dest,expectedDepartTime);
+        return result;
+    }
+    else if(cityNumber > 0 )
+    {
+        Result firstResult;
+        firstResult = fastestStrategy(log,depart,passCities.at(0).toStdString(),expectedDepartTime);
+        MyTime newDepartTime(0,passHours[0],0);
+        newDepartTime = newDepartTime + firstResult.destTime;
+        int i=0;
+        if(cityNumber > 1)
+        {
+            for(; i<cityNumber-1; i++)
+            {
+                Result middleResult = fastestStrategy(log,passCities.at(i).toStdString(),passCities.at(i+1).toStdString(),newDepartTime);
+                MyTime passTime(0,passHours[i+1],0);
+                newDepartTime = middleResult.destTime + passTime;
+            }
+        }
+        Result lastResult = fastestStrategy(log,passCities.at(i).toStdString(),dest,newDepartTime);
+        return lastResult;
+    }
+}
 

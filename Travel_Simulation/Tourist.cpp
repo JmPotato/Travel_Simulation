@@ -51,6 +51,17 @@ Tourist::Tourist(string start, string end, MyTime startTime, MyTime endTime, int
     expectedDestTime = endTime;
 }
 
+Tourist::Tourist(string start, string end, QStringList Cities, vector<int> Hours, MyTime startTime, MyTime endTime, int strategy)
+{
+    depart = start;
+    dest = end;
+    passCity = Cities;
+    passHours = Hours;
+    type = strategy;
+    expectedDepartTime = startTime;
+    expectedDestTime = endTime;
+}
+
 /**
  * @brief Tourist::getId
  * @return
@@ -103,6 +114,12 @@ string Tourist::getLocation() {
 void Tourist::getStrategy() {
     planResult = new Strategy(type, depart, dest, expectedDepartTime, expectedDestTime);
     planResult->startStrategy(log);
+}
+
+void Tourist::getPassStrategy()
+{
+    planResult = new Strategy(type, depart,dest, passCity, passHours,expectedDepartTime, expectedDestTime);
+    planResult->startPassStrategy(log);
 }
 
 /**

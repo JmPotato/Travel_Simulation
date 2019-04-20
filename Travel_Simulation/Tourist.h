@@ -5,6 +5,7 @@
 #include "Strategy.h"
 
 #include <string>
+#include <QStringList>
 
 using namespace std;
 
@@ -18,6 +19,8 @@ private:
     MyTime expectedDepartTime;          // 期望出发时间
     MyTime expectedDestTime;            // 期望到达时间
     string location;                    // 旅客当前位置（暂时未使用）
+    QStringList passCity;
+    vector<int> passHours;
 
     /* 产生的信息 */
     QString log;
@@ -30,7 +33,7 @@ public:
     Tourist(string start, string end, int strategy);
     Tourist(string start, string end, MyTime startTime, int strategy);
     Tourist(string start, string end, MyTime startTime, MyTime endTime, int strategy);
-
+    Tourist(string start, string end, QStringList passCity, vector<int> passHours, MyTime startTime, MyTime endTime, int strategy);
     /* 一些也许可以用到的 getter 函数 */
     unsigned short getId();         // 未用
     string getDepart();
@@ -38,6 +41,7 @@ public:
     int getType();
     string getLocation();
     void getStrategy();
+    void getPassStrategy();
     QString getLog();
     Strategy *getPlanResult();      // 产生策略
 };
