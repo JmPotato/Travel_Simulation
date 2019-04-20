@@ -329,7 +329,7 @@ Result Strategy::fastestStrategy(QString &log, string d1, string d2, MyTime expe
             oneResult.moenyCost = 0;
 
             /* 记录到达当前结点时的最佳时间 */
-            MyTime endTime = expectedDepartTime;
+            MyTime endTime = expectedDepartT;
             MyTime currentTime;
 
             /* 产生调试信息：搜索出的一条路径 */
@@ -395,7 +395,7 @@ Result Strategy::fastestStrategy(QString &log, string d1, string d2, MyTime expe
                     onePath.start = *it;
                     onePath.end = *(it + 1);
                     oneResult.moenyCost += onePath.moneyCost;
-                    oneResult.timeCost = endTime - expectedDepartTime;
+                    oneResult.timeCost = endTime - expectedDepartT;
                     oneResult.route.push_back(onePath);
                 }
             }
