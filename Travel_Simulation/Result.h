@@ -18,4 +18,5 @@ typedef struct RESULT {
     vector<Path> route;
 } Result;
 
+
 #endif // RESULT_H
