@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
-    ui->passList->
+    //ui->passList->
 
     connect(this->ui->departureBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDepartCity()));
     connect(this->ui->destinationBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDestCity()));
