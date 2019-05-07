@@ -30,6 +30,7 @@ private:
 
 public:
     /* 构造函数 */
+    Tourist();
     Tourist(string start, string end, int strategy);
     Tourist(string start, string end, MyTime startTime, int strategy);
     Tourist(string start, string end, MyTime startTime, MyTime endTime, int strategy);

@@ -7,6 +7,11 @@
  * @param strategy
  * @author ghz
  */
+Tourist::Tourist()
+{
+
+}
+
 Tourist::Tourist(string start, string end, int strategy) {
 //    id = 0;
     depart = start;

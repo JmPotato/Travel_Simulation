@@ -112,8 +112,8 @@ void Strategy::startPassStrategy(QString &log)
  */
 Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime expectedDepartT)
 {
-    cout << "start ";
-    expectedDepartT.print();
+    //cout << "start ";
+    //expectedDepartT.print();
     /* 配置接口 */
     QSqlQuery query(db);
     query.exec("select * from time_table");
@@ -171,7 +171,6 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
      vector<Path>::iterator iter2;
      MyTime timeUsed;
      unsigned short day = 0;
-    // unsigned short currentday = day;
      /* 按照刚才算法产生的路径重新遍历，得出完整的全部需要的信息 */
      for (iter2 = result.route.begin(); iter2 != result.route.end(); iter2++) {
         QString start = QString::fromStdString((*iter2).start);
@@ -183,7 +182,6 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
         MyTime period, tempPeriod;
         QString codeNumber, methodTool;
         period.parseString(query.value("Dep_Time").toString());
-
         codeNumber = query.value("Number").toString();
         methodTool = query.value("Tran").toString();
         while(query.next()) {
@@ -209,13 +207,13 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
                 period = earliest;
                 departTime.day += 1;
             } else {
-                departTime.hour = period.hour;
-                departTime.minute = period.minute;
+
+                departTime.hour=period.hour;
+                departTime.minute=period.minute;
             }
             period = departTime;
             period.day = departTime.day + expectedDepartT.day;
             destTime = departTime + timeUsed;
-            //period.day = day;
             day += destTime.day;
         } else {
             query.first();
@@ -234,7 +232,6 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
         iter2->tool = methodTool;
         iter2->number = codeNumber;
         iter2->startTime = period;
-        //iter2->startTime.day = day;
         iter2->endTime = period + timeUsed;
         iter2->timeCost = timeUsed;
         log.append(QString("路线: %1--->%2\n").arg(start).arg(end));
@@ -253,8 +250,8 @@ Result Strategy::cheapestStrategy(QString &log, string d1, string d2, MyTime exp
      // 输出结束
      //result.timeCost.print();
      result.destTime = destTime;
-     cout << "end ";
-      destTime.print();
+     //cout << "end ";
+     // destTime.print();
      return result;
 }
 
@@ -827,8 +824,8 @@ Result Strategy::cheapestPassStrategy(QString &log)
         //totalMoneyCost += firstResult.moenyCost;
         MyTime newDepartTime(0,passHours[0],0);
         newDepartTime = newDepartTime + firstResult.destTime;
-        cout << "new ";
-        newDepartTime.print();
+        //cout << "new ";
+       // newDepartTime.print();
         int i=0;
         if(cityNumber > 1)
         {

@@ -1,4 +1,5 @@
 #include "MyTime.h"
+#include <QDebug>
 
 /**
  * @brief normalizeTime
@@ -153,5 +154,5 @@ void MyTime::parseString(QString timeString) {
 
 void MyTime::print()
 {
-    std::cout << day << "天" << hour << "时" << minute << "分" << std::endl;
+    qDebug()<<day << "天" << hour << "时" << minute << "分";
 }

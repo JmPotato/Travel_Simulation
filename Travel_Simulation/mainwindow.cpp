@@ -4,6 +4,7 @@
 #include "Tourist.h"
 #include <QDebug>
 #include <QListWidgetItem>
+#include <QMessageBox>
 #include <QStringList>
 
 /**
@@ -20,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->startTime->setDateTime(QDateTime::currentDateTime());
     ui->expectedEndTime->setDateTime(QDateTime::currentDateTime());
     ui->endTime->setDateTime(QDateTime::currentDateTime());
+    ui->simulatedTime->setDateTime(QDateTime::currentDateTime());
+    ui->simulatedProgressBar->setRange(0,1000);
+    ui->simulatedProgressBar->setValue(0);
     ui->endTime->setEnabled(false);
     ui->expectedEndTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
@@ -36,10 +40,12 @@ MainWindow::MainWindow(QWidget *parent) :
     mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
-    //ui->passList->
+    planReady = false;
+    ptimer = new QTimer;
 
     connect(this->ui->departureBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDepartCity()));
     connect(this->ui->destinationBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDestCity()));
+    connect(ptimer,SIGNAL(timeout()),this,SLOT(changeTravelStatus()));
 }
 
 /**
@@ -55,6 +61,9 @@ MainWindow::~MainWindow()
  * @author ghz
  */
 void MainWindow::on_planButton_clicked() {
+
+    planReady = true;
+
     if (ui->departureBox->currentText() == ui->destinationBox->currentText())
         ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
     else {
@@ -97,15 +106,16 @@ void MainWindow::on_planButton_clicked() {
         MyTime expectedEndTime = startTime + period;
         //cout << expectedEndTime.day << "天" << expectedEndTime.hour << "时" << expectedEndTime.minute << "分\n";
         //Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), startTime, expectedEndTime, ui->strategyBox->currentIndex() + 1);
+
         Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), passCity, hours,startTime,expectedEndTime, ui->strategyBox->currentIndex() + 1);
-        //t.getStrategy();
-        t.getPassStrategy();
-        ui->logBrowser->setText(t.getLog());
-        MyTime endTime = startTime + t.getPlanResult()->destTime - t.getPlanResult()->expectedDepartTime;
+        tourist = t;
+        tourist.getPassStrategy();
+        ui->logBrowser->setText(tourist.getLog());
+        MyTime endTime = startTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
         ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
         ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
         ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
-        int cost=t.getPlanResult()->result.moenyCost;
+        int cost=tourist.getPlanResult()->result.moenyCost;
         ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
     }
 }
@@ -167,4 +177,50 @@ void MainWindow::changeDestCity()
     addedCities.removeAll(destCity);
     addedCities.append(ui->destinationBox->currentText());
     departCity = ui->destinationBox->currentText();
+}
+
+//点击开始模拟旅行
+void MainWindow::on_simButton_clicked()
+{
+    if(planReady == false)
+    {
+        QMessageBox::information(this,"错误","请先规划旅行线路，再开始模拟旅行","确定");
+        return;
+    }
+    else
+    {
+        ptimer->start(1);  //30ms超时一次，加一分钟
+        currentMinute=0;
+        day = 0;
+
+        MyTime CostTime = tourist.getPlanResult()->result.timeCost;
+        int totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
+        //CostTime.print();
+        //qDebug()<<totalMinutes;
+    }
+}
+
+void MainWindow::changeTravelStatus()
+{
+    currentMinute++;
+    MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
+    MyTime endTime = startTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
+    MyTime CostTime = tourist.getPlanResult()->result.timeCost;
+    int totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
+
+    int value =1000*currentMinute/totalMinutes;
+    ui->simulatedProgressBar->setValue(value);
+
+    if(currentMinute == totalMinutes)
+        ptimer->stop();
+
+    QTime ceil(23,59,59,999);
+    QTime floor(23,59,0,0);
+
+    if(floor < ui->startTime->time().addSecs(currentMinute*60) && ui->startTime->time().addSecs(currentMinute*60) < ceil)
+       day++;
+
+    ui->simulatedTime->setDate(ui->startTime->date().addDays(startTime.day+day));
+    ui->simulatedTime->setTime(QTime::fromString("00:00", "hh:mm"));
+    ui->simulatedTime->setTime(ui->startTime->time().addSecs(currentMinute*60));
 }
