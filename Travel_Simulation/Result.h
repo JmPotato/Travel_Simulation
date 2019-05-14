@@ -12,8 +12,6 @@ typedef struct RESULT {
     MyTime timeCost;
     MyTime destTime;
     int moenyCost;
-
-
     /* 存储某策略产生的一条从出发地到目的地的连续的路径 */
     vector<Path> route;
 } Result;
