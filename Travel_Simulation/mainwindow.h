@@ -8,6 +8,7 @@
 #include <QSet>
 #include <QString>
 #include <QTimer>
+#include <QQueue>
 #include "Tourist.h"
 
 namespace Ui {
@@ -35,6 +36,8 @@ private slots:
     void on_simButton_clicked();
     void changeTravelStatus();
 
+    void on_pauseButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QList<QString> addedCities;
@@ -43,8 +46,18 @@ private:
     bool planReady;
     QTimer *ptimer;
     Tourist tourist;
-    int currentMinute;
-    int day; //模拟旅行中用到的天数
+    int currentMinute;              //模拟旅行中当前的分钟
+    int day;                        //模拟旅行中当前的天数
+    int pathIndex;                  //模拟旅行中当前已到达第几个path，第一个path为path1
+    int cityIndex;                  //模拟旅行中当前已到达第几个city,出发城市是city0
+    bool alreadyStart;              //判断是否已经开始模拟
+    int targetMinutes;              //用于判断是否到达一个path的开始
+    int targetMinutes2;             //用于判断是否到达一个path的结束
+    QQueue<int> pathStartMinutes;   //每条path的开始时间，转化为分钟
+    QQueue<int> pathEndMinutes;     //每条path的结束时间，转化为分钟
+    QVector<QString> cities;        //出发城市--->中间城市--->终点城市
+    QVector<QString> pathes;        //path1--->path2--->...>pathN
+
 };
 
 #endif // MAINWINDOW_H

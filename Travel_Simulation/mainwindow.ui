@@ -14,7 +14,7 @@
    <string>Travel Simulation</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="5,1">
+   <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="20,9">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -26,7 +26,14 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QTextBrowser" name="logBrowser"/>
+         <widget class="QTextBrowser" name="logBrowser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -116,7 +123,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="visitTime"/>
+         <widget class="QSpinBox" name="visitTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -130,6 +144,12 @@
         </property>
         <item>
          <widget class="QPushButton" name="addCity">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>+</string>
           </property>
@@ -137,6 +157,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="deleteCity">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>-</string>
           </property>
@@ -154,7 +180,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QDateTimeEdit" name="startTime"/>
+         <widget class="QDateTimeEdit" name="startTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="expectedEndTimeLabel">
@@ -164,7 +197,14 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QDateTimeEdit" name="expectedEndTime"/>
+         <widget class="QDateTimeEdit" name="expectedEndTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -199,6 +239,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="planButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>开始规划</string>
           </property>
@@ -236,6 +282,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="simButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>开始模拟</string>
           </property>
@@ -257,7 +309,56 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,3,1">
+        <item>
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pauseButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>暂停模拟</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="Line" name="line">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="styleSheet">
          <string notr="true">color:rgb(255, 0, 0)</string>
         </property>
@@ -276,10 +377,21 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QDateTimeEdit" name="simulatedTime"/>
+         <widget class="QDateTimeEdit" name="simulatedTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLabel" name="label_4">
+         <widget class="QLabel" name="statusLabel">
+          <property name="styleSheet">
+           <string notr="true">font: 9pt &quot;微软雅黑&quot;;
+color: rgb(255, 0, 0);</string>
+          </property>
           <property name="text">
            <string>      (还未开始模拟）</string>
           </property>
@@ -300,7 +412,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QDateTimeEdit" name="endTime"/>
+         <widget class="QDateTimeEdit" name="endTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="endTimeLabel">

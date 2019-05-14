@@ -6,6 +6,7 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QStringList>
+#include <queue>
 
 /**
  * @brief MainWindow::MainWindow
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->endTime->setEnabled(false);
     ui->expectedEndTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
+    ui->pauseButton->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
     ui->strategyBox->addItems(strategyList);
     QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
@@ -41,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
     ui->mapBrowser->setScaledContents(true);
     planReady = false;
+    alreadyStart = false;
     ptimer = new QTimer;
 
     connect(this->ui->departureBox,SIGNAL(currentTextChanged(QString)),this,SLOT(changeDepartCity()));
@@ -62,7 +65,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::on_planButton_clicked() {
 
-    planReady = true;
+
 
     if (ui->departureBox->currentText() == ui->destinationBox->currentText())
         ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
@@ -117,6 +120,7 @@ void MainWindow::on_planButton_clicked() {
         ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
         int cost=tourist.getPlanResult()->result.moenyCost;
         ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
+        planReady = true;
     }
 }
 
@@ -189,14 +193,51 @@ void MainWindow::on_simButton_clicked()
     }
     else
     {
-        ptimer->start(1);  //30ms超时一次，加一分钟
-        currentMinute=0;
-        day = 0;
-
-        MyTime CostTime = tourist.getPlanResult()->result.timeCost;
-        int totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
-        //CostTime.print();
-        //qDebug()<<totalMinutes;
+        ui->planButton->setEnabled(false);
+        ui->simButton->setEnabled(false);
+        ui->pauseButton->setEnabled(true);
+        ptimer->start(10);                   //可以用来调节模拟进度的快慢
+        if(!alreadyStart)                   //还没有开始模拟
+        {
+            currentMinute =0;
+            day = 0;
+            pathIndex = 0;
+            cityIndex = 0;
+            pathes.clear();
+            cities.clear();
+            MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
+            MyTime tempTime(0,0,0);
+            MyTime tempTime2(0,0,0);
+            Result result = tourist.getPlanResult()->result;
+            vector<Path>::iterator iter = result.route.begin();
+            cities.append("目前停留在：" + QString::fromStdString((*iter).start));
+            for(iter = result.route.begin();iter!= result.route.end();iter++)
+            {
+                tempTime = (*iter).startTime - startTime;
+                int minutes = tempTime.day*24*60+tempTime.hour*60+tempTime.minute;
+                pathStartMinutes.enqueue(minutes);
+                tempTime2 = (*iter).endTime - startTime;
+                //qDebug()<<"path结束时间";
+                //tempTime2.print();
+                int minutes2 = tempTime2.day*24*60+tempTime2.hour*60+tempTime2.minute;
+                //qDebug()<<"path结束分钟"<<minutes2;
+                pathEndMinutes.enqueue(minutes2);
+                QString startCity  = QString::fromStdString((*iter).start);
+                QString endCity  = QString::fromStdString((*iter).end);
+                QString currentTool = (*iter).tool;
+                QString currentNumber = (*iter).number;
+                pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
+                cities.append("目前停留在："+endCity);
+                //qDebug()<<"pathStartMinutes:"<<pathStartMinutes;
+                //qDebug()<<"pathEndMinutes"<<pathEndMinutes;
+            }
+            targetMinutes = pathStartMinutes.dequeue();
+            targetMinutes2 = pathEndMinutes.dequeue();
+            this->ui->statusLabel->setText(QString("%1").arg(cities[cityIndex]));
+            //qDebug()<<"pathes:"<<pathes;
+            //qDebug()<<"cities:"<<cities;
+        }
+        alreadyStart = true;
     }
 }
 
@@ -204,23 +245,55 @@ void MainWindow::changeTravelStatus()
 {
     currentMinute++;
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
-    MyTime endTime = startTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
     MyTime CostTime = tourist.getPlanResult()->result.timeCost;
     int totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
-
     int value =1000*currentMinute/totalMinutes;
     ui->simulatedProgressBar->setValue(value);
 
-    if(currentMinute == totalMinutes)
-        ptimer->stop();
-
     QTime ceil(23,59,59,999);
     QTime floor(23,59,0,0);
-
     if(floor < ui->startTime->time().addSecs(currentMinute*60) && ui->startTime->time().addSecs(currentMinute*60) < ceil)
        day++;
-
-    ui->simulatedTime->setDate(ui->startTime->date().addDays(startTime.day+day));
+    ui->simulatedTime->setDate(ui->startTime->date().addDays(startTime.day + day));
     ui->simulatedTime->setTime(QTime::fromString("00:00", "hh:mm"));
     ui->simulatedTime->setTime(ui->startTime->time().addSecs(currentMinute*60));
+
+    if(currentMinute == targetMinutes)  //到达新的path
+    {
+        //qDebug()<<"currentMinute"<<currentMinute;
+        pathIndex++;
+        //qDebug()<<"path"<<path;
+        this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
+        if(pathStartMinutes.size()>0)
+            targetMinutes = pathStartMinutes.dequeue();
+    }
+
+    if(currentMinute == targetMinutes2)  //到达一个城市
+    {
+        //qDebug()<<"currentMinute"<<currentMinute;
+        cityIndex++;
+        //qDebug()<<"city"<<city;
+        this->ui->statusLabel->setText(QString("%1").arg(cities[cityIndex]));
+        if(pathEndMinutes.size()>0)
+            targetMinutes2 = pathEndMinutes.dequeue();
+    }
+
+    if(currentMinute == totalMinutes)  //模拟完成
+    {
+        ptimer->stop();
+        alreadyStart = false;
+        ui->planButton->setEnabled(true);
+        ui->simButton->setEnabled(true);
+        ui->simButton->setText("开始模拟");
+        ui->pauseButton->setEnabled(false);
+        QMessageBox::information(this,"提示","本次模拟结束！","确定");
+    }
+}
+
+void MainWindow::on_pauseButton_clicked()
+{
+    ptimer->stop();
+    this->ui->pauseButton->setEnabled(false);
+    this->ui->simButton->setEnabled(true);
+    this->ui->simButton->setText("继续模拟");
 }
