@@ -574,7 +574,7 @@ Result Strategy::cheapestPassStrategy(QString &log)
                 MyTime passTime(0,passHours[i+1],0);
                 newDepartTime = middleResult.destTime + passTime;
                 cout << "new ";
-                newDepartTime.print();
+                //newDepartTime.print();
             }
         }
         Result lastResult = cheapestStrategy(log,passCities.at(i).toStdString(),dest,newDepartTime);
@@ -661,7 +661,7 @@ Result Strategy::timeLimitStrategy(QString &log)
     QString tempString;
     //aResult = cheapestStrategy(tempString, dest, depart, expectedDepartTime);
     aResult = cheapestPassStrategy(log);
-    aResult.timeCost.print();
+    //aResult.timeCost.print();
     if(aResult.timeCost + expectedDepartTime < expectedDestTime)
     {
         result = aResult;
@@ -672,9 +672,9 @@ Result Strategy::timeLimitStrategy(QString &log)
         //aResult = fastestStrategy(tempString, depart, dest, expectedDepartTime);
         aResult = fastestPassStrategy(log);
         log.clear();
-        aResult.timeCost.print();
-        expectedDestTime.print();
-        expectedDepartTime.print();
+        //aResult.timeCost.print();
+        //expectedDestTime.print();
+        //expectedDepartTime.print();
         if(expectedDestTime < aResult.destTime) {
              //cout << "!!!!" << endl;
              result.moenyCost = 0;
