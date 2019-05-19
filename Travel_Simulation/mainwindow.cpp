@@ -216,7 +216,7 @@ void MainWindow::on_simButton_clicked()
         ui->deleteCity->setEnabled(false);
         ui->pauseButton->setEnabled(true);
         ptimer->start(10);                   //可以用来调节模拟进度的快慢      
-        if(!alreadyStart)                   //还没有开始模拟
+        if(!alreadyStart)                       //还没有开始模拟
         {
             qDebug()<<"开始模拟旅行";
             currentMinute =0;
@@ -257,7 +257,7 @@ void MainWindow::on_simButton_clicked()
             //qDebug()<<"pathes:"<<pathes;
             //qDebug()<<"cities:"<<cities;
         }
-        else
+        else   //已经开始模拟
         {
             qDebug()<<"继续模拟旅行";
         }
@@ -285,16 +285,12 @@ void MainWindow::changeTravelStatus()
     if(currentMinute == targetMinutes)  //到达新的path
     {
         pathIndex++;
-        for (int i = 0; i < ui->passList->count(); i++) {
+        for (int i = 1; i < ui->passList->count(); i++) {
             QListWidgetItem *tempItem = ui->passList->item(i);
             if (cities[pathIndex] == "目前停留在：" + tempItem->text().mid(0,2)) {
                 tempItem->setFlags(Qt::NoItemFlags);
             }
         }
-        //tempItem->s
-        //qDebug()<<"currentMinute"<<currentMinute;
-        pathIndex++;
-        //qDebug()<<"path"<<pathes;
         this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
         if(pathStartMinutes.size()>0)
             targetMinutes = pathStartMinutes.dequeue();
