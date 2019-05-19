@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->expectedEndTime->setEnabled(false);
     ui->budgetEdit->setEnabled(false);
     ui->pauseButton->setEnabled(false);
+    ui->simulatedTime->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
     ui->strategyBox->addItems(strategyList);
     QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
@@ -193,8 +194,16 @@ void MainWindow::on_simButton_clicked()
     }
     else
     {
+        ui->departureBox->setEnabled(false);
+        ui->destinationBox->setEnabled(false);
+        ui->cityBox->setEnabled(false);
+        ui->visitTime->setEnabled(false);
+        ui->startTime->setEnabled(false);
         ui->planButton->setEnabled(false);
+        ui->strategyBox->setEnabled(false);
         ui->simButton->setEnabled(false);
+        ui->addCity->setEnabled(false);
+        ui->deleteCity->setEnabled(false);
         ui->pauseButton->setEnabled(true);
         ptimer->start(10);                   //可以用来调节模拟进度的快慢
         if(!alreadyStart)                   //还没有开始模拟
@@ -260,6 +269,12 @@ void MainWindow::changeTravelStatus()
 
     if(currentMinute == targetMinutes)  //到达新的path
     {
+
+        if (cityIndex + 1 <= ui->passList->count() - 1) {
+            QListWidgetItem *tempItem = ui->passList->item(cityIndex + 1);
+            tempItem->setFlags(Qt::NoItemFlags);
+        }
+        //tempItem->s
         //qDebug()<<"currentMinute"<<currentMinute;
         pathIndex++;
         //qDebug()<<"path"<<path;
@@ -287,6 +302,16 @@ void MainWindow::changeTravelStatus()
         ui->simButton->setText("开始模拟");
         ui->pauseButton->setEnabled(false);
         QMessageBox::information(this,"提示","本次模拟结束！","确定");
+        ui->departureBox->setEnabled(true);
+        ui->destinationBox->setEnabled(true);
+        ui->cityBox->setEnabled(true);
+        ui->visitTime->setEnabled(true);
+        ui->startTime->setEnabled(true);
+        ui->planButton->setEnabled(true);
+        ui->strategyBox->setEnabled(true);
+        ui->simButton->setEnabled(true);
+        ui->addCity->setEnabled(true);
+        ui->deleteCity->setEnabled(true);
     }
 }
 
