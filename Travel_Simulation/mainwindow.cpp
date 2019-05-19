@@ -114,6 +114,7 @@ void MainWindow::on_planButton_clicked() {
         Tourist t(ui->departureBox->currentText().toStdString(), ui->destinationBox->currentText().toStdString(), passCity, hours,startTime,expectedEndTime, ui->strategyBox->currentIndex() + 1);
         tourist = t;
         tourist.getPassStrategy();
+        //tourist.planResult->result.timeCost =
         ui->logBrowser->setText(tourist.getLog());
         MyTime endTime = startTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
         ui->endTime->setDate(ui->startTime->date().addDays(endTime.day));
@@ -269,14 +270,16 @@ void MainWindow::changeTravelStatus()
 
     if(currentMinute == targetMinutes)  //到达新的path
     {
-
-        if (cityIndex + 1 <= ui->passList->count() - 1) {
-            QListWidgetItem *tempItem = ui->passList->item(cityIndex + 1);
-            tempItem->setFlags(Qt::NoItemFlags);
+        pathIndex++;
+        for (int i = 0; i < ui->passList->count(); i++) {
+            QListWidgetItem *tempItem = ui->passList->item(i);
+            if (cities[pathIndex] == "目前停留在：" + tempItem->text().mid(0,2)) {
+                tempItem->setFlags(Qt::NoItemFlags);
+            }
         }
         //tempItem->s
         //qDebug()<<"currentMinute"<<currentMinute;
-        pathIndex++;
+
         //qDebug()<<"path"<<path;
         this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
         if(pathStartMinutes.size()>0)
@@ -312,6 +315,10 @@ void MainWindow::changeTravelStatus()
         ui->simButton->setEnabled(true);
         ui->addCity->setEnabled(true);
         ui->deleteCity->setEnabled(true);
+        for (int i = 1; i < ui->passList->count(); i++) {
+            QListWidgetItem *tempItem = ui->passList->item(i);
+            tempItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        }
     }
 }
 

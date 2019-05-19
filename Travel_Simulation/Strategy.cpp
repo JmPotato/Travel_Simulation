@@ -534,7 +534,7 @@ Result Strategy::fastestStrategy(QString &log, string d1, string d2, MyTime expe
 
 void add_result(Result &main, Result add)
 {
-    main.timeCost = main.timeCost + add.timeCost;
+    main.timeCost = main.timeCost + (add.destTime - main.destTime);
     main.destTime = add.destTime;
     main.moenyCost += add.moenyCost;
     for (auto path : add.route)
