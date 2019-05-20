@@ -14,7 +14,7 @@
    <string>Travel Simulation</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="20,9">
+   <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="20,9">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -179,6 +179,16 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <widget class="QDateTimeEdit" name="expectedEndTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QDateTimeEdit" name="startTime">
           <property name="sizePolicy">
@@ -193,16 +203,6 @@
          <widget class="QLabel" name="expectedEndTimeLabel">
           <property name="text">
            <string>期望到达时间</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDateTimeEdit" name="expectedEndTime">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
           </property>
          </widget>
         </item>
@@ -352,6 +352,49 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,3,1">
+        <item>
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="changePlanButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>更改计划</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="Line" name="line">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -369,48 +412,6 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="budgetLabel">
-          <property name="text">
-           <string>预算金额</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QDateTimeEdit" name="simulatedTime">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="statusLabel">
-          <property name="styleSheet">
-           <string notr="true">font: 9pt &quot;微软雅黑&quot;;
-color: rgb(255, 0, 0);</string>
-          </property>
-          <property name="text">
-           <string>      (还未开始模拟）</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QProgressBar" name="simulatedProgressBar">
-          <property name="value">
-           <number>24</number>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>当前旅行状态</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QDateTimeEdit" name="endTime">
           <property name="sizePolicy">
@@ -418,6 +419,13 @@ color: rgb(255, 0, 0);</string>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QProgressBar" name="simulatedProgressBar">
+          <property name="value">
+           <number>24</number>
           </property>
          </widget>
         </item>
@@ -435,6 +443,23 @@ color: rgb(255, 0, 0);</string>
           </property>
          </widget>
         </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>当前旅行状态</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="budgetLabel">
+          <property name="text">
+           <string>预算金额</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="budgetEdit"/>
+        </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
@@ -442,8 +467,26 @@ color: rgb(255, 0, 0);</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="budgetEdit"/>
+        <item row="4" column="1">
+         <widget class="QLabel" name="statusLabel">
+          <property name="styleSheet">
+           <string notr="true">font: 9pt &quot;微软雅黑&quot;;
+color: rgb(255, 0, 0);</string>
+          </property>
+          <property name="text">
+           <string>      (还未开始模拟）</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDateTimeEdit" name="simulatedTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
