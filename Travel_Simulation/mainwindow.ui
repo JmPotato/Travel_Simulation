@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="log">
        <attribute name="title">
@@ -41,15 +41,7 @@
        <attribute name="title">
         <string>模拟地图</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="mapBrowser">
-          <property name="text">
-           <string>MAP LOADING</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QVBoxLayout" name="verticalLayout_2"/>
       </widget>
      </widget>
     </item>

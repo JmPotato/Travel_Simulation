@@ -1,12 +1,4 @@
 ﻿#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "Strategy.h"
-#include "Tourist.h"
-#include <QDebug>
-#include <QListWidgetItem>
-#include <QMessageBox>
-#include <QStringList>
-#include <queue>
 
 /**
  * @brief MainWindow::MainWindow
@@ -32,16 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->changePlanButton->setEnabled(false);
     QStringList strategyList = {"最少费用", "最少用时", "最少费用+时间"};
     ui->strategyBox->addItems(strategyList);
-    QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
     QStringList addCityList = {"请选择途经城市", "上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
     ui->departureBox->addItems(cityList);
     ui->destinationBox->addItems(cityList);
     ui->cityBox->addItems(addCityList);
     ui->tabWidget->setCurrentIndex(0);
-    QImage mapImage("China-O.jpg");
-    mapImage  = mapImage.scaled(QSize(800, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    ui->mapBrowser->setPixmap(QPixmap::fromImage(mapImage));
-    ui->mapBrowser->setScaledContents(true);
     planReady = false;
     alreadyStart = false;
     ptimer = new QTimer;
@@ -64,6 +51,8 @@ MainWindow::~MainWindow()
  * @author ghz
  */
 void MainWindow::on_planButton_clicked() {
+    allPassPoint.clear();
+    repaint();
     if (ui->departureBox->currentText() == ui->destinationBox->currentText()){
         ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
         //qDebug()<<"--点击开始规划，但是出发城市和到达城市一样";
@@ -267,6 +256,8 @@ void MainWindow::on_simButton_clicked()
             }
             targetMinutes = pathStartMinutes.dequeue();
             targetMinutes2 = pathEndMinutes.dequeue();
+            currentPeriodMinute = targetMinutes2 - targetMinutes;
+            lastDepartMinute = targetMinutes;
             this->ui->statusLabel->setText("目前停留在：" + QString("%1").arg(cities[cityIndex]));
             onPath = false;
             //qDebug()<<"pathes:"<<pathes;
@@ -283,6 +274,7 @@ void MainWindow::on_simButton_clicked()
 void MainWindow::changeTravelStatus()
 {
     currentMinute++;
+    repaint();
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
     int value =1000*currentMinute/totalMinutes;
     ui->simulatedProgressBar->setValue(value);
@@ -299,6 +291,8 @@ void MainWindow::changeTravelStatus()
     {
         onPath = true;
         pathIndex++;
+        currentPeriodMinute = targetMinutes2 - targetMinutes;
+        lastDepartMinute = targetMinutes;
         for (int i = 1; i < ui->passList->count(); i++) {
             QListWidgetItem *tempItem = ui->passList->item(i);
             if (cities[pathIndex] == tempItem->text().mid(0,2)) {
@@ -306,6 +300,10 @@ void MainWindow::changeTravelStatus()
                 alreadyPassCity++;
             }
         }
+        currentPathStart = cities[cityIndex];
+        currentPathEnd = cities[cityIndex+1];
+        currentPeriodMinute = targetMinutes2 - targetMinutes;
+        lastDepartMinute = targetMinutes;
         this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
         if(pathStartMinutes.size()>0)
             targetMinutes = pathStartMinutes.dequeue();
@@ -317,6 +315,8 @@ void MainWindow::changeTravelStatus()
         //qDebug()<<"currentMinute"<<currentMinute;
         cityIndex++;
         //qDebug()<<"city"<<cities;
+        currentPeriodMinute = targetMinutes2 - targetMinutes;
+        lastDepartMinute = targetMinutes;
         this->ui->statusLabel->setText("目前停留在：" + QString("%1").arg(cities[cityIndex]));
         if(pathEndMinutes.size()>0)
             targetMinutes2 = pathEndMinutes.dequeue();
@@ -359,6 +359,84 @@ void MainWindow::on_pauseButton_clicked()
     this->ui->pauseButton->setEnabled(false);
     this->ui->simButton->setEnabled(true);
     this->ui->simButton->setText("按原计划继续模拟");
+}
+
+//初始化城市绘图坐标点
+void MainWindow::initCityPoint() {
+    //cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
+    //上海
+    cityPoint[0].setX(800);
+    cityPoint[0].setY(500);
+    //北京
+    cityPoint[1].setX(500);
+    cityPoint[1].setY(100);
+    //南京
+    cityPoint[2].setX(700);
+    cityPoint[2].setY(500);
+    //广州
+    cityPoint[3].setX(300);
+    cityPoint[3].setY(800);
+    //成都
+    cityPoint[4].setX(200);
+    cityPoint[4].setY(500);
+    //杭州
+    cityPoint[5].setX(750);
+    cityPoint[5].setY(600);
+    //武汉
+    cityPoint[6].setX(300);
+    cityPoint[6].setY(500);
+    //深圳
+    cityPoint[7].setX(350);
+    cityPoint[7].setY(800);
+    //西安
+    cityPoint[8].setX(100);
+    cityPoint[8].setY(200);
+    //郑州
+    cityPoint[9].setX(200);
+    cityPoint[9].setY(200);
+    //重庆
+    cityPoint[10].setX(250);
+    cityPoint[10].setY(500);
+    //青岛
+    cityPoint[11].setX(600);
+    cityPoint[11].setY(200);
+}
+
+void MainWindow::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    initCityPoint();
+    QPainter painter(this);
+    QPen pen;
+    pen.setWidth(5);
+    painter.setPen(pen);
+    for(int i = 0;i < 12;i++) {
+        pen.setColor(Qt::green);
+        painter.setPen(pen);
+        painter.drawText(cityPoint[i], cityList[i]);
+    }
+    for(int i = 0;i < allPassPoint.count()-1;i++) {
+        pen.setColor(Qt::blue);
+        painter.setPen(pen);
+        painter.drawLine(allPassPoint[i], allPassPoint[i+1]);
+    }
+    if(alreadyStart && onPath && ui->tabWidget->currentIndex() == 1) {
+        pen.setColor(Qt::blue);
+        painter.setPen(pen);
+        QPointF currentStartPoint = cityPoint[cityList.indexOf(currentPathStart)];
+        QPointF currentEndPoint = cityPoint[cityList.indexOf(currentPathEnd)];
+        QPointF currentPoint;
+        double xLength = currentEndPoint.x()-currentStartPoint.x();
+        double yLength = currentEndPoint.y()-currentStartPoint.y();
+        double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
+        currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
+        currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
+        painter.drawLine(currentStartPoint, currentPoint);
+        if(allPassPoint.empty())
+            allPassPoint.append(currentStartPoint);
+        if(currentPoint == currentEndPoint) {
+            allPassPoint.append(currentPoint);
+        }
+    }
 }
 
 //模拟中途点击更改计划

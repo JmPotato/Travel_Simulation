@@ -1,15 +1,26 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "ui_mainwindow.h"
+#include "Strategy.h"
+#include "Tourist.h"
+
+#include <QSet>
 #include <QDate>
+#include <QDebug>
+#include <QQueue>
+#include <QTimer>
+#include <QString>
+#include <QPainter>
 #include <QDateTime>
 #include <QTextStream>
 #include <QMainWindow>
-#include <QSet>
-#include <QString>
-#include <QTimer>
-#include <QQueue>
-#include "Tourist.h"
+#include <QMessageBox>
+#include <QStringList>
+#include <QListWidgetItem>
+
+#include <cmath>
+#include <queue>
 
 namespace Ui {
 class MainWindow;
@@ -22,22 +33,18 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    void paintEvent(QPaintEvent *event);
+    void initCityPoint();
 private slots:
-    void on_planButton_clicked();
-
-    void on_strategyBox_currentIndexChanged(int index);
-
-    void on_addCity_clicked();
-
-    void on_deleteCity_clicked();
     void changeDepartCity();
     void changeDestCity();
-    void on_simButton_clicked();
+    void on_addCity_clicked();
+    void on_deleteCity_clicked();
     void changeTravelStatus();
-
+    void on_strategyBox_currentIndexChanged(int index);
+    void on_planButton_clicked();
+    void on_simButton_clicked();
     void on_pauseButton_clicked();
-
     void on_changePlanButton_clicked();
 
 private:
@@ -45,6 +52,8 @@ private:
     QList<QString> addedCities;
     QString departCity;
     QString destCity;
+    QStringList cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
+    QPointF cityPoint[12];
     bool planReady;
     QTimer *ptimer;
     Tourist tourist;
@@ -57,6 +66,11 @@ private:
     bool onPath;                    //判读是否正在一条path上
     int targetMinutes;              //用于判断是否到达一个path的开始
     int targetMinutes2;             //用于判断是否到达一个path的结束
+    QString currentPathStart;
+    QString currentPathEnd;
+    int lastDepartMinute;
+    int currentPeriodMinute;
+    QVector<QPointF> allPassPoint;
     QQueue<int> pathStartMinutes;   //每条path的开始时间，转化为分钟
     QQueue<int> pathEndMinutes;     //每条path的结束时间，转化为分钟
     QVector<QString> cities;        //出发城市--->中间城市--->终点城市
