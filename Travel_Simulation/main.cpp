@@ -1,8 +1,9 @@
 #include "mainwindow.h"
-#include <QApplication>
 #include "Tourist.h"
+
 #include <QFile>
 #include <QTextStream>
+#include <QApplication>
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

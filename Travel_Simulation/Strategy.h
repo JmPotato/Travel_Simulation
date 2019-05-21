@@ -1,11 +1,19 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
-#include <string>
-#include <QSqlDatabase>
-#include <QStringList>
+#include "Graph.h"
 #include "Result.h"
 #include "MyTime.h"
+
+#include <QSqlDatabase>
+#include <QStringList>
+#include <QtSql>
+
+#include <set>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <algorithm>
 
 using std::string;
 

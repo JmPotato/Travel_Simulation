@@ -1,9 +1,11 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <string>
 #include "MyTime.h"
+
 #include <QString>
+
+#include <string>
 
 using std::string;
 

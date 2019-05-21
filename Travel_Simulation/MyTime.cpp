@@ -1,5 +1,4 @@
 #include "MyTime.h"
-#include <QDebug>
 
 /**
  * @brief normalizeTime

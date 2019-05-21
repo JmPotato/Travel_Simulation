@@ -1,10 +1,12 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <string>
-#include <vector>
 #include "Result.h"
 #include "MyTime.h"
+
+#include <string>
+#include <vector>
+#include <iostream>
 
 #define MaxInt 32767        // Dijkstra Algorithm 中设定的无限大的值
 

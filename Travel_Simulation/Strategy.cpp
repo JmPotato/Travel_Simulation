@@ -1,10 +1,4 @@
 #include "Strategy.h"
-#include "Graph.h"
-#include <iostream>
-#include <stack>
-#include <set>
-#include <QtSql>
-#include <algorithm>
 
 using std::set;
 using std::stack;

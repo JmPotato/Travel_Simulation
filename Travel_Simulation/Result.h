@@ -1,9 +1,10 @@
 #ifndef RESULT_H
 #define RESULT_H
 
-#include <vector>
-#include "MyTime.h"
 #include "Path.h"
+#include "MyTime.h"
+
+#include <vector>
 
 using std::vector;
 

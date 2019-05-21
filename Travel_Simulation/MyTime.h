@@ -1,8 +1,10 @@
 #ifndef MyTime_H
 #define MyTime_H
 
-#include <iostream>
+#include <QDebug>
 #include <QString>
+
+#include <iostream>
 
 class MyTime {
 public:
