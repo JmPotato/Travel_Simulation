@@ -47,6 +47,8 @@ private slots:
     void on_pauseButton_clicked();
     void on_changePlanButton_clicked();
 
+    void on_tabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     QList<QString> addedCities;

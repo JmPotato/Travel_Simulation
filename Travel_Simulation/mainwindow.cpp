@@ -51,6 +51,7 @@ MainWindow::~MainWindow()
  * @author ghz
  */
 void MainWindow::on_planButton_clicked() {
+    ui->tabWidget->setCurrentIndex(0);
     allPassPoint.clear();
     repaint();
     if (ui->departureBox->currentText() == ui->destinationBox->currentText()){
@@ -196,6 +197,7 @@ void MainWindow::changeDestCity()
 //点击开始模拟旅行
 void MainWindow::on_simButton_clicked()
 {
+    ui->tabWidget->setCurrentIndex(1);
     if(planReady == false)
     {
         QMessageBox::information(this,"错误","请先规划旅行线路，再开始模拟旅行","确定");
@@ -220,6 +222,8 @@ void MainWindow::on_simButton_clicked()
         ptimer->start(10);                   //可以用来调节模拟进度的快慢
         if(!alreadyStart)                       //还没有开始模拟
         {
+            allPassPoint.clear();
+            repaint();
             //qDebug()<<"--开始模拟旅行";
             currentMinute =0;
             day = 0;
@@ -403,38 +407,59 @@ void MainWindow::initCityPoint() {
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
-    initCityPoint();
-    QPainter painter(this);
-    QPen pen;
-    pen.setWidth(5);
-    painter.setPen(pen);
-    for(int i = 0;i < 12;i++) {
-        pen.setColor(Qt::green);
-        painter.setPen(pen);
-        painter.drawText(cityPoint[i], cityList[i]);
-    }
-    for(int i = 0;i < allPassPoint.count()-1;i++) {
-        pen.setColor(Qt::blue);
-        painter.setPen(pen);
-        painter.drawLine(allPassPoint[i], allPassPoint[i+1]);
-    }
-    if(alreadyStart && onPath && ui->tabWidget->currentIndex() == 1) {
-        pen.setColor(Qt::blue);
-        painter.setPen(pen);
+    if(ui->tabWidget->currentIndex() == 1) {
+        Q_UNUSED(event);
+        initCityPoint();
+        QPainter painter(this);
+        QPen pen;
+        pen.setWidth(5);
+        static double wid = rect().width();
+        static double hei = rect().height();
+        painter.setRenderHints(QPainter::Antialiasing, true); //抗锯齿
+        double new_wid = rect().width()/wid;
+        double new_hei = rect().height()/hei;
+        double min = qMin(new_wid,new_hei);
+        painter.scale(min, min);
         QPointF currentStartPoint = cityPoint[cityList.indexOf(currentPathStart)];
         QPointF currentEndPoint = cityPoint[cityList.indexOf(currentPathEnd)];
-        QPointF currentPoint;
-        double xLength = currentEndPoint.x()-currentStartPoint.x();
-        double yLength = currentEndPoint.y()-currentStartPoint.y();
-        double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
-        currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
-        currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
-        painter.drawLine(currentStartPoint, currentPoint);
-        if(allPassPoint.empty())
-            allPassPoint.append(currentStartPoint);
-        if(currentPoint == currentEndPoint) {
-            allPassPoint.append(currentPoint);
+        for(int i = 0;i < allPassPoint.count()-1;i++) {
+            pen.setColor(Qt::gray);
+            painter.setPen(pen);
+            painter.drawLine(allPassPoint[i], allPassPoint[i+1]);
+        }
+        for(int i = 0;i < 12;i++) {
+            pen.setColor(Qt::yellow);
+            painter.setPen(pen);
+            painter.drawPoint(cityPoint[i]);
+            pen.setColor(Qt::green);
+            painter.setPen(pen);
+            painter.drawText(cityPoint[i].x() - 12, cityPoint[i].y() - 10, cityList[i]);
+        }
+        for(int i = 0;i < allPassPoint.count()-1;i++) {
+            pen.setColor(Qt::red);
+            painter.setPen(pen);
+            painter.drawPoint(allPassPoint[i]);
+            painter.drawPoint(allPassPoint[i+1]);
+        }
+        if(alreadyStart && onPath) {
+            pen.setColor(Qt::red);
+            painter.setPen(pen);
+            painter.drawPoint(currentStartPoint);
+            painter.drawPoint(currentEndPoint);
+            QPointF currentPoint;
+            double xLength = currentEndPoint.x()-currentStartPoint.x();
+            double yLength = currentEndPoint.y()-currentStartPoint.y();
+            double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
+            currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
+            currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
+            pen.setColor(Qt::blue);
+            painter.setPen(pen);
+            painter.drawLine(currentStartPoint, currentPoint);
+            if(allPassPoint.empty())
+                allPassPoint.append(currentStartPoint);
+            if(currentPoint == currentEndPoint) {
+                allPassPoint.append(currentPoint);
+            }
         }
     }
 }
@@ -563,4 +588,9 @@ void MainWindow::on_changePlanButton_clicked()
         totalMinutes = pathEndMinutes.last();
         ptimer->start(10);
     }
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index) {
+    Q_UNUSED(index);
+    repaint();
 }
