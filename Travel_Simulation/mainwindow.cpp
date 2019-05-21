@@ -229,6 +229,7 @@ void MainWindow::on_simButton_clicked()
             pathIndex = 0;
             cityIndex = 0;
             alreadyPassCity = 0;
+            alreadyCostMoney = 0;
             pathes.clear();
             cities.clear();
             MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
@@ -252,8 +253,10 @@ void MainWindow::on_simButton_clicked()
                 QString endCity  = QString::fromStdString((*iter).end);
                 QString currentTool = (*iter).tool;
                 QString currentNumber = (*iter).number;
+                int currentMoney = (*iter).moneyCost;
                 pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
                 cities.append(endCity);
+                moneyOfPath.append(currentMoney);
                 //qDebug()<<"pathStartMinutes:"<<pathStartMinutes;
                 //qDebug()<<"pathEndMinutes"<<pathEndMinutes;
             }
@@ -309,6 +312,9 @@ void MainWindow::changeTravelStatus()
         this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
         if(pathStartMinutes.size()>0)
             targetMinutes = pathStartMinutes.dequeue();
+
+        //处理已经花费的金额
+        alreadyCostMoney+=moneyOfPath[pathIndex-1];
     }
 
     if(currentMinute == targetMinutes2)  //到达一个城市
@@ -485,8 +491,10 @@ void MainWindow::on_changePlanButton_clicked()
         MyTime newStartTime(0,0,0);
         int newStartMinutes = targetMinutes2 + ui->startTime->time().hour()*60 +ui->startTime->time().minute();
         int bewteenMinutes = targetMinutes2;
+        bool stopOnPath = false;
         if(onPath == true) //正在某一条path上，以path的终点为起点城市，以到达时间为新期望出发日期
         {
+            stopOnPath = true;
             newDepartCity = cities[cityIndex + 1];
             unsigned short day = newStartMinutes/(24*60);
             unsigned short hour = (newStartMinutes-(day*1440))/60;
@@ -526,6 +534,7 @@ void MainWindow::on_changePlanButton_clicked()
               newHours.push_back(hoursString.toInt());
             }
         }
+
         //设置expectedEndTime
         MyTime oldStartTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
         uint intervalTime = 0;
@@ -537,21 +546,28 @@ void MainWindow::on_changePlanButton_clicked()
         day = intervalTime / (24 * 60 * 60);
         hour = (intervalTime % (24 * 60 * 60)) / (60 * 60);
         minute = (intervalTime % (24 * 60 * 60)) % (60 * 60) / 60;
-        MyTime period(day, hour, minute);
+        MyTime period(day-(this->day), hour, minute);
         MyTime expectedEndTime = oldStartTime + period;
 
         //设置新的Tourist，计算新的策略
         Tourist t(newDepartCity.toStdString(), ui->destinationBox->currentText().toStdString(), newPassCity, newHours, newStartTime,expectedEndTime, ui->strategyBox->currentIndex() + 1);
         tourist = t;
         tourist.getPassStrategy();
+        if(tourist.getLog() == QString("你期望的到达时间太早，系统无法匹配路线！"))
+        {
+            QMessageBox::information(this,"错误","你期望的到达时间太早，系统无法匹配路线！","确定");
+            return;
+        }
         ui->logBrowser->setText(tourist.getLog());
         MyTime endTime = newStartTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
         ui->endTime->setDate(ui->startTime->date().addDays(endTime.day).addDays(newStartMinutes/(24*60)));
         ui->endTime->setTime(QTime::fromString("00:00", "hh:mm"));
         ui->endTime->setTime(ui->endTime->time().addSecs(endTime.hour * 3600 + endTime.minute * 60));
 
-        //？？？？？钱还没有处理
+
+        //处理花费，加上了已经走过的花费
         int cost=tourist.getPlanResult()->result.moenyCost;
+        cost+=alreadyCostMoney;
         ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
 
         //控制进度相关部分
@@ -578,13 +594,45 @@ void MainWindow::on_changePlanButton_clicked()
             QString endCity  = QString::fromStdString((*iter).end);
             QString currentTool = (*iter).tool;
             QString currentNumber = (*iter).number;
+            int currentMoney = (*iter).moneyCost;
             pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
             cities.append(endCity);
+            moneyOfPath.append(currentMoney);
         }
-        targetMinutes = pathStartMinutes.dequeue();
-        targetMinutes2 = pathEndMinutes.dequeue();
-        totalMinutes = pathEndMinutes.last();
+        if(stopOnPath)
+        {
+            cityIndex = -1;
+            targetMinutes = pathStartMinutes.dequeue();
+        }
+        else
+        {
+            targetMinutes = pathStartMinutes.dequeue();
+            targetMinutes2 = pathEndMinutes.dequeue();
+        }
+
+        if(pathEndMinutes.empty())
+            totalMinutes = targetMinutes2;
+        else
+            totalMinutes = pathEndMinutes.last();
+        /*
+        int minutes = ui->startTime->dateTime().secsTo(ui->endTime->dateTime())/60;
+        qDebug()<<"end-start"<<minutes;
+        */
+
         ptimer->start(10);
+        this->ui->changePlanButton->setText("更改计划");
+        ui->departureBox->setEnabled(false);
+        ui->destinationBox->setEnabled(false);
+        ui->cityBox->setEnabled(false);
+        ui->visitTime->setEnabled(false);
+        ui->startTime->setEnabled(false);
+        ui->planButton->setEnabled(false);
+        ui->strategyBox->setEnabled(false);
+        ui->simButton->setEnabled(false);
+        ui->addCity->setEnabled(false);
+        ui->deleteCity->setEnabled(false);
+        ui->changePlanButton->setEnabled(false);
+        ui->pauseButton->setEnabled(true);
     }
 }
 

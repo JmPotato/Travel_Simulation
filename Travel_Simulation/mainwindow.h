@@ -64,6 +64,7 @@ private:
     int cityIndex;                  //模拟旅行中当前已到达第几个city,出发城市是city0
     bool alreadyStart;              //判断是否已经开始模拟
     bool onPath;                    //判读是否正在一条path上
+    int alreadyCostMoney;           //已经花费的金额
     int targetMinutes;              //用于判断是否到达一个path的开始
     int targetMinutes2;             //用于判断是否到达一个path的结束
     QString currentPathStart;
@@ -75,6 +76,7 @@ private:
     QQueue<int> pathEndMinutes;     //每条path的结束时间，转化为分钟
     QVector<QString> cities;        //出发城市--->中间城市--->终点城市
     QVector<QString> pathes;        //path1--->path2--->...>pathN
+    QVector<int> moneyOfPath;       //每条path的花费
     int alreadyPassCity;            //途经城市列表中已经经过的城市数量
 };
 
