@@ -4,7 +4,6 @@
 #include "ui_mainwindow.h"
 #include "Strategy.h"
 #include "Tourist.h"
-
 #include <QSet>
 #include <QDate>
 #include <QDebug>
@@ -18,7 +17,6 @@
 #include <QMessageBox>
 #include <QStringList>
 #include <QListWidgetItem>
-
 #include <cmath>
 #include <queue>
 

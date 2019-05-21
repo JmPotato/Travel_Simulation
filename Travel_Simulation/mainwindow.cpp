@@ -1,5 +1,4 @@
 ﻿#include "mainwindow.h"
-
 /**
  * @brief MainWindow::MainWindow
  * @param parent
@@ -277,7 +276,6 @@ void MainWindow::on_simButton_clicked()
 
 void MainWindow::changeTravelStatus()
 {
-    currentMinute++;
     repaint();
     MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
     int value =1000*currentMinute/totalMinutes;
@@ -352,6 +350,7 @@ void MainWindow::changeTravelStatus()
             tempItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         }
     }
+    currentMinute++;
 }
 
 void MainWindow::on_pauseButton_clicked()
@@ -527,7 +526,6 @@ void MainWindow::on_changePlanButton_clicked()
               newHours.push_back(hoursString.toInt());
             }
         }
-
         //设置expectedEndTime
         MyTime oldStartTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
         uint intervalTime = 0;
