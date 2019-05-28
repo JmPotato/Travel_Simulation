@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->destinationBox->addItems(cityList);
     ui->cityBox->addItems(addCityList);
     ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setAutoFillBackground(false);    //尝试修复 Windows 下控件自动填充背景导致遮挡的问题
     planReady = false;
     alreadyStart = false;
     ptimer = new QTimer;
@@ -218,7 +219,7 @@ void MainWindow::on_simButton_clicked()
         ui->pauseButton->setEnabled(true);
         MyTime CostTime = tourist.getPlanResult()->result.timeCost;
         totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
-        ptimer->start(10);                   //可以用来调节模拟进度的快慢
+        ptimer->start(1);                   //可以用来调节模拟进度的快慢
         if(!alreadyStart)                       //还没有开始模拟
         {
             allPassPoint.clear();
@@ -381,10 +382,10 @@ void MainWindow::initCityPoint() {
     cityPoint[1].setY(100);
     //南京
     cityPoint[2].setX(700);
-    cityPoint[2].setY(500);
+    cityPoint[2].setY(450);
     //广州
-    cityPoint[3].setX(300);
-    cityPoint[3].setY(800);
+    cityPoint[3].setX(550);
+    cityPoint[3].setY(750);
     //成都
     cityPoint[4].setX(200);
     cityPoint[4].setY(500);
@@ -392,20 +393,20 @@ void MainWindow::initCityPoint() {
     cityPoint[5].setX(750);
     cityPoint[5].setY(600);
     //武汉
-    cityPoint[6].setX(300);
+    cityPoint[6].setX(600);
     cityPoint[6].setY(500);
     //深圳
-    cityPoint[7].setX(350);
+    cityPoint[7].setX(600);
     cityPoint[7].setY(800);
     //西安
     cityPoint[8].setX(100);
-    cityPoint[8].setY(200);
+    cityPoint[8].setY(250);
     //郑州
     cityPoint[9].setX(200);
     cityPoint[9].setY(200);
     //重庆
-    cityPoint[10].setX(250);
-    cityPoint[10].setY(500);
+    cityPoint[10].setX(225);
+    cityPoint[10].setY(525);
     //青岛
     cityPoint[11].setX(600);
     cityPoint[11].setY(200);
@@ -457,7 +458,7 @@ void MainWindow::paintEvent(QPaintEvent *event) {
             double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
             currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
             currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
-            pen.setColor(Qt::blue);
+            pen.setColor(Qt::green);
             painter.setPen(pen);
             painter.drawLine(currentStartPoint, currentPoint);
             if(allPassPoint.empty())
