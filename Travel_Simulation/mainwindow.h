@@ -69,6 +69,7 @@ private:
     int targetMinutes2;             //用于判断是否到达一个path的结束
     QString currentPathStart;
     QString currentPathEnd;
+    QString currentTool;
     int lastDepartMinute;
     int currentPeriodMinute;
     QVector<QPointF> allPassPoint;

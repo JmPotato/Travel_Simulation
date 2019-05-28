@@ -252,7 +252,7 @@ void MainWindow::on_simButton_clicked()
                 pathEndMinutes.enqueue(minutes2);
                 QString startCity  = QString::fromStdString((*iter).start);
                 QString endCity  = QString::fromStdString((*iter).end);
-                QString currentTool = (*iter).tool;
+                currentTool = (*iter).tool;
                 QString currentNumber = (*iter).number;
                 int currentMoney = (*iter).moneyCost;
                 pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
@@ -461,6 +461,14 @@ void MainWindow::paintEvent(QPaintEvent *event) {
             pen.setColor(Qt::green);
             painter.setPen(pen);
             painter.drawLine(currentStartPoint, currentPoint);
+            QPixmap transferTool;
+            if(currentTool == "飞机")
+                transferTool = QPixmap("plane.png").scaled(QSize(50, 50), Qt::KeepAspectRatio);
+            else if(currentTool == "火车")
+                transferTool = QPixmap("train.png").scaled(QSize(50, 50), Qt::KeepAspectRatio);
+            else if(currentTool == "汽车")
+                transferTool = QPixmap("car.png").scaled(QSize(50, 50), Qt::KeepAspectRatio);
+            painter.drawPixmap(currentPoint.x() - 25, currentPoint.y() - 25, transferTool);
             if(allPassPoint.empty())
                 allPassPoint.append(currentStartPoint);
             if(currentPoint == currentEndPoint) {
@@ -593,7 +601,7 @@ void MainWindow::on_changePlanButton_clicked()
             pathEndMinutes.enqueue(minutes2 + bewteenMinutes );
             QString startCity  = QString::fromStdString((*iter).start);
             QString endCity  = QString::fromStdString((*iter).end);
-            QString currentTool = (*iter).tool;
+            currentTool = (*iter).tool;
             QString currentNumber = (*iter).number;
             int currentMoney = (*iter).moneyCost;
             pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
