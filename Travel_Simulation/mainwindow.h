@@ -67,16 +67,17 @@ private:
     int alreadyCostMoney;           //已经花费的金额
     int targetMinutes;              //用于判断是否到达一个path的开始
     int targetMinutes2;             //用于判断是否到达一个path的结束
-    QString currentPathStart;
-    QString currentPathEnd;
-    QString currentTool;
-    int lastDepartMinute;
-    int currentPeriodMinute;
-    QVector<QPointF> allPassPoint;
+    QString currentPathStart;       //用于存储当前模拟路径的出发地
+    QString currentPathEnd;         //用于存储当前模拟路径的目的地
+    QString currentTool;            //用于存储当前模拟路径的交通工具
+    int lastDepartMinute;           //用于存储当前模拟路径的出发时间
+    int currentPeriodMinute;        //用于存储当前模拟路径的用时
+    QVector<QPointF> allPassPoint;  //用于存储当前模拟路径已通过的点
     QQueue<int> pathStartMinutes;   //每条path的开始时间，转化为分钟
     QQueue<int> pathEndMinutes;     //每条path的结束时间，转化为分钟
     QVector<QString> cities;        //出发城市--->中间城市--->终点城市
     QVector<QString> pathes;        //path1--->path2--->...>pathN
+    QVector<QString> tools;         //每条路径的交通工具
     QVector<int> moneyOfPath;       //每条path的花费
     int alreadyPassCity;            //途经城市列表中已经经过的城市数量
 };

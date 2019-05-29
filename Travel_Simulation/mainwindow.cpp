@@ -219,7 +219,7 @@ void MainWindow::on_simButton_clicked()
         ui->pauseButton->setEnabled(true);
         MyTime CostTime = tourist.getPlanResult()->result.timeCost;
         totalMinutes = CostTime.day*24*60+CostTime.hour*60+CostTime.minute;
-        ptimer->start(1);                   //可以用来调节模拟进度的快慢
+        ptimer->start(10);                   //可以用来调节模拟进度的快慢
         if(!alreadyStart)                       //还没有开始模拟
         {
             allPassPoint.clear();
@@ -231,6 +231,7 @@ void MainWindow::on_simButton_clicked()
             cityIndex = 0;
             alreadyPassCity = 0;
             alreadyCostMoney = 0;
+            tools.clear();
             pathes.clear();
             cities.clear();
             MyTime startTime(0, ui->startTime->time().hour(), ui->startTime->time().minute());
@@ -252,10 +253,10 @@ void MainWindow::on_simButton_clicked()
                 pathEndMinutes.enqueue(minutes2);
                 QString startCity  = QString::fromStdString((*iter).start);
                 QString endCity  = QString::fromStdString((*iter).end);
-                currentTool = (*iter).tool;
                 QString currentNumber = (*iter).number;
                 int currentMoney = (*iter).moneyCost;
-                pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
+                tools.append((*iter).tool);
+                pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg((*iter).tool).arg(currentNumber));
                 cities.append(endCity);
                 moneyOfPath.append(currentMoney);
                 //qDebug()<<"pathStartMinutes:"<<pathStartMinutes;
@@ -306,6 +307,7 @@ void MainWindow::changeTravelStatus()
                 alreadyPassCity++;
             }
         }
+        currentTool = tools[pathIndex-1];
         currentPathStart = cities[cityIndex];
         currentPathEnd = cities[cityIndex+1];
         currentPeriodMinute = targetMinutes2 - targetMinutes;
@@ -375,41 +377,41 @@ void MainWindow::on_pauseButton_clicked()
 void MainWindow::initCityPoint() {
     //cityList = {"上海", "北京","南京" ,"广州" ,"成都" ,"杭州" ,"武汉" ,"深圳" ,"西安" ,"郑州" ,"重庆" ,"青岛"};
     //上海
-    cityPoint[0].setX(800);
-    cityPoint[0].setY(500);
+    cityPoint[0].setX(772);
+    cityPoint[0].setY(447);
     //北京
-    cityPoint[1].setX(500);
-    cityPoint[1].setY(100);
+    cityPoint[1].setX(605);
+    cityPoint[1].setY(184);
     //南京
-    cityPoint[2].setX(700);
-    cityPoint[2].setY(450);
+    cityPoint[2].setX(670);
+    cityPoint[2].setY(437);
     //广州
-    cityPoint[3].setX(550);
-    cityPoint[3].setY(750);
+    cityPoint[3].setX(531);
+    cityPoint[3].setY(730);
     //成都
-    cityPoint[4].setX(200);
-    cityPoint[4].setY(500);
+    cityPoint[4].setX(239);
+    cityPoint[4].setY(481);
     //杭州
-    cityPoint[5].setX(750);
-    cityPoint[5].setY(600);
+    cityPoint[5].setX(740);
+    cityPoint[5].setY(520);
     //武汉
-    cityPoint[6].setX(600);
-    cityPoint[6].setY(500);
+    cityPoint[6].setX(552);
+    cityPoint[6].setY(489);
     //深圳
-    cityPoint[7].setX(600);
-    cityPoint[7].setY(800);
+    cityPoint[7].setX(561);
+    cityPoint[7].setY(745);
     //西安
-    cityPoint[8].setX(100);
-    cityPoint[8].setY(250);
+    cityPoint[8].setX(388);
+    cityPoint[8].setY(371);
     //郑州
-    cityPoint[9].setX(200);
-    cityPoint[9].setY(200);
+    cityPoint[9].setX(528);
+    cityPoint[9].setY(363);
     //重庆
-    cityPoint[10].setX(225);
-    cityPoint[10].setY(525);
+    cityPoint[10].setX(305);
+    cityPoint[10].setY(534);
     //青岛
-    cityPoint[11].setX(600);
-    cityPoint[11].setY(200);
+    cityPoint[11].setX(740);
+    cityPoint[11].setY(290);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
@@ -426,6 +428,10 @@ void MainWindow::paintEvent(QPaintEvent *event) {
         double new_hei = rect().height()/hei;
         double min = qMin(new_wid,new_hei);
         painter.scale(min, min);
+        QSize mapSize = ui->tabWidget->size();
+        mapSize.setHeight(mapSize.height() - 50);
+        QPixmap map = QPixmap("China-S.jpeg").scaled(mapSize);
+        painter.drawPixmap(11, 35, map);
         QPointF currentStartPoint = cityPoint[cityList.indexOf(currentPathStart)];
         QPointF currentEndPoint = cityPoint[cityList.indexOf(currentPathEnd)];
         for(int i = 0;i < allPassPoint.count()-1;i++) {
@@ -434,21 +440,24 @@ void MainWindow::paintEvent(QPaintEvent *event) {
             painter.drawLine(allPassPoint[i], allPassPoint[i+1]);
         }
         for(int i = 0;i < 12;i++) {
-            pen.setColor(Qt::yellow);
+            pen.setColor(Qt::red);
+            pen.setWidth(6);
             painter.setPen(pen);
             painter.drawPoint(cityPoint[i]);
-            pen.setColor(Qt::green);
+            pen.setColor(Qt::red);
             painter.setPen(pen);
             painter.drawText(cityPoint[i].x() - 12, cityPoint[i].y() - 10, cityList[i]);
         }
         for(int i = 0;i < allPassPoint.count()-1;i++) {
-            pen.setColor(Qt::red);
+            pen.setColor(Qt::black);
+            pen.setWidth(6);
             painter.setPen(pen);
             painter.drawPoint(allPassPoint[i]);
             painter.drawPoint(allPassPoint[i+1]);
         }
         if(alreadyStart && onPath) {
-            pen.setColor(Qt::red);
+            pen.setColor(Qt::black);
+            pen.setWidth(6);
             painter.setPen(pen);
             painter.drawPoint(currentStartPoint);
             painter.drawPoint(currentEndPoint);
@@ -582,6 +591,7 @@ void MainWindow::on_changePlanButton_clicked()
         //控制进度相关部分
         pathIndex = 0;
         cityIndex = 0;
+        tools.clear();
         pathes.clear();
         cities.clear();
         pathStartMinutes.clear();
@@ -601,10 +611,10 @@ void MainWindow::on_changePlanButton_clicked()
             pathEndMinutes.enqueue(minutes2 + bewteenMinutes );
             QString startCity  = QString::fromStdString((*iter).start);
             QString endCity  = QString::fromStdString((*iter).end);
-            currentTool = (*iter).tool;
+            tools.append((*iter).tool);
             QString currentNumber = (*iter).number;
             int currentMoney = (*iter).moneyCost;
-            pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg(currentTool).arg(currentNumber));
+            pathes.append(QString("%1--->%2,%3(%4)").arg(startCity).arg(endCity).arg((*iter).tool).arg(currentNumber));
             cities.append(endCity);
             moneyOfPath.append(currentMoney);
         }
