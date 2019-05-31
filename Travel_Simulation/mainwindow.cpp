@@ -417,9 +417,24 @@ void MainWindow::initCityPoint() {
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
+    initCityPoint();
+    QPointF currentPoint;
+    QPointF currentStartPoint = cityPoint[cityList.indexOf(currentPathStart)];
+    QPointF currentEndPoint = cityPoint[cityList.indexOf(currentPathEnd)];
+    if(alreadyStart && onPath) {
+        double xLength = currentEndPoint.x()-currentStartPoint.x();
+        double yLength = currentEndPoint.y()-currentStartPoint.y();
+        double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
+        currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
+        currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
+        if(allPassPoint.empty())
+            allPassPoint.append(currentStartPoint);
+        if(currentPoint == currentEndPoint) {
+            allPassPoint.append(currentPoint);
+        }
+    }
     if(ui->tabWidget->currentIndex() == 1) {
         Q_UNUSED(event);
-        initCityPoint();
         QPainter painter(this);
         QPen pen;
         pen.setWidth(5);
@@ -434,8 +449,6 @@ void MainWindow::paintEvent(QPaintEvent *event) {
         mapSize.setHeight(mapSize.height() - 50);
         QPixmap map = QPixmap("China-S.jpeg").scaled(mapSize);
         painter.drawPixmap(11, 35, map);
-        QPointF currentStartPoint = cityPoint[cityList.indexOf(currentPathStart)];
-        QPointF currentEndPoint = cityPoint[cityList.indexOf(currentPathEnd)];
         for(int i = 0;i < allPassPoint.count()-1;i++) {
             pen.setColor(Qt::gray);
             painter.setPen(pen);
@@ -463,12 +476,6 @@ void MainWindow::paintEvent(QPaintEvent *event) {
             painter.setPen(pen);
             painter.drawPoint(currentStartPoint);
             painter.drawPoint(currentEndPoint);
-            QPointF currentPoint;
-            double xLength = currentEndPoint.x()-currentStartPoint.x();
-            double yLength = currentEndPoint.y()-currentStartPoint.y();
-            double currentProgress = double(currentMinute - lastDepartMinute) / currentPeriodMinute;
-            currentPoint.setX(currentStartPoint.x() + xLength * currentProgress);
-            currentPoint.setY(currentStartPoint.y() + yLength * currentProgress);
             pen.setColor(Qt::green);
             painter.setPen(pen);
             painter.drawLine(currentStartPoint, currentPoint);
@@ -480,11 +487,6 @@ void MainWindow::paintEvent(QPaintEvent *event) {
             else if(currentTool == "汽车")
                 transferTool = QPixmap("car.png").scaled(QSize(50, 50), Qt::KeepAspectRatio);
             painter.drawPixmap(currentPoint.x() - 25, currentPoint.y() - 25, transferTool);
-            if(allPassPoint.empty())
-                allPassPoint.append(currentStartPoint);
-            if(currentPoint == currentEndPoint) {
-                allPassPoint.append(currentPoint);
-            }
         }
     }
 }

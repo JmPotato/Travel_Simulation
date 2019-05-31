@@ -505,10 +505,10 @@ Result Strategy::fastestStrategy(QString &log, string d1, string d2, MyTime expe
         log.append(QString("交通工具: %1    ").arg(it->tool));
         log.append(QString("车次/航班号: %1\n").arg(it->number));
         log.append(QString("花费金额: %1\n").arg(it->moneyCost));
-        if (it->endTime.day == 0)
+        //if (it->endTime.day == 0)
             log.append(QString("出发时间: %1时%2分 到达时间: %3时%4分\n").arg(it->startTime.hour).arg(it->startTime.minute).arg(it->endTime.hour).arg(it->endTime.minute));
-        else
-            log.append(QString("到达时间: 第%3天%4时%5分\n").arg(it->endTime.day + 1).arg(it->endTime.hour).arg(it->endTime.minute));
+        //else
+           // log.append(QString("到达时间: 第%3天%4时%5分\n").arg(it->endTime.day + 1).arg(it->endTime.hour).arg(it->endTime.minute));
         log.append(QString("用时: %1天%2时%3分\n\n").arg(it->timeCost.day).arg(it->timeCost.hour).arg(it->timeCost.minute));
     }
     log.append(QString("总用时: %1天%2时%3分\n").arg(result.timeCost.day).arg(result.timeCost.hour).arg(result.timeCost.minute));
