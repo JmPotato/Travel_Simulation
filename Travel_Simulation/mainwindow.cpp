@@ -56,7 +56,7 @@ void MainWindow::on_planButton_clicked() {
     repaint();
     if (ui->departureBox->currentText() == ui->destinationBox->currentText()){
         ui->logBrowser->setText(QString("您的出发城市和到达城市一样，请重新选择"));
-        //qDebug()<<"--点击开始规划，但是出发城市和到达城市一样";
+        qDebug()<<"点击开始规划，但是出发城市和到达城市一样";
     }
     else {
         int count = ui->passList->count();
@@ -107,7 +107,7 @@ void MainWindow::on_planButton_clicked() {
         tourist = t;
         tourist.getPassStrategy();
         ui->logBrowser->setText(tourist.getLog());
-        //qDebug()<<"--完成旅行方案规划，详细方案信息已输出到logBrowser中，以下为简要信息";
+        qDebug()<<"完成旅行方案规划，详细方案信息已输出到logBrowser中，以下为简要信息";
         MyTime endTime = startTime + tourist.getPlanResult()->destTime - tourist.getPlanResult()->expectedDepartTime;
       //qDebug()<<"destTime";
       //tourist.getPlanResult()->destTime.print();
@@ -121,13 +121,13 @@ void MainWindow::on_planButton_clicked() {
         int cost=tourist.getPlanResult()->result.moenyCost;
         ui->budgetEdit->setText(QString("RMB ¥")+QString::number(cost));
         planReady = true;
-        //qDebug()<<"--出发城市："<<ui->departureBox->currentText();
-        //qDebug()<<"--途经城市："<<passCity;
-        //qDebug()<<"--终点城市："<<ui->destinationBox->currentText();
-        //qDebug()<<"--旅行策略："<<ui->strategyBox->currentText();
-        //qDebug()<<"--出发时间："<<ui->startTime->dateTime().toString("yyyy-MM-dd hh:mm");
-        //qDebug()<<"--到达时间："<<ui->endTime->dateTime().toString("yyyy-MM-dd hh:mm");
-        //qDebug()<<"--总花费金额："<<ui->budgetEdit->text();
+        qDebug()<<"出发城市："<<ui->departureBox->currentText();
+        qDebug()<<"途经城市："<<passCity;
+        qDebug()<<"终点城市："<<ui->destinationBox->currentText();
+        qDebug()<<"旅行策略："<<ui->strategyBox->currentText();
+        qDebug()<<"出发时间："<<ui->startTime->dateTime().toString("yyyy-MM-dd hh:mm");
+        qDebug()<<"到达时间："<<ui->endTime->dateTime().toString("yyyy-MM-dd hh:mm");
+        qDebug()<<"总花费金额："<<ui->budgetEdit->text();
     }
 }
 
@@ -164,7 +164,7 @@ void MainWindow::on_addCity_clicked()
         item->setText(text);
         ui->passList->addItem(item);
         ui->passList->setFocus();
-        //qDebug()<<"--添加中途城市："<<city;
+        qDebug()<<"添加中途城市："<<city;
     }
 }
 //途经城市列表删除城市
@@ -172,7 +172,7 @@ void MainWindow::on_deleteCity_clicked()
 {
     QListWidgetItem *currentItem = ui->passList->currentItem();
     if (currentItem) {
-        //qDebug()<<"--删除中途城市："<<(*currentItem).text().mid(0,2);
+        qDebug()<<"删除中途城市："<<(*currentItem).text().mid(0,2);
         addedCities.removeAll((*currentItem).text().mid(0,2));
         delete currentItem;
     }
@@ -183,7 +183,7 @@ void MainWindow::changeDepartCity()
     addedCities.removeAll(departCity);
     addedCities.append(ui->departureBox->currentText());
     departCity = ui->departureBox->currentText();
-    //qDebug()<<"--出发城市改为："<<departCity;
+    qDebug()<<"出发城市改为："<<departCity;
 }
 
 void MainWindow::changeDestCity()
@@ -191,7 +191,7 @@ void MainWindow::changeDestCity()
     addedCities.removeAll(destCity);
     addedCities.append(ui->destinationBox->currentText());
     destCity = ui->destinationBox->currentText();
-    //qDebug()<<"--终点城市改为："<<destCity;
+    qDebug()<<"终点城市改为："<<destCity;
 }
 
 //点击开始模拟旅行
@@ -224,7 +224,7 @@ void MainWindow::on_simButton_clicked()
         {
             allPassPoint.clear();
             repaint();
-            //qDebug()<<"--开始模拟旅行";
+            qDebug()<<"开始模拟";
             currentMinute =0;
             day = 0;
             pathIndex = 0;
@@ -273,7 +273,7 @@ void MainWindow::on_simButton_clicked()
         }
         else   //已经开始模拟
         {
-            //qDebug()<<"--继续模拟旅行";
+            qDebug()<<"继续模拟旅行";
         }
         alreadyStart = true;
     }
@@ -294,6 +294,20 @@ void MainWindow::changeTravelStatus()
     ui->simulatedTime->setTime(QTime::fromString("00:00", "hh:mm"));
     ui->simulatedTime->setTime(ui->startTime->time().addSecs(currentMinute*60));
 
+    if(currentMinute == targetMinutes2)  //到达一个城市
+    {
+        onPath = false;
+        //qDebug()<<"currentMinute"<<currentMinute;
+        cityIndex++;
+        //qDebug()<<"city"<<cities;
+        currentPeriodMinute = targetMinutes2 - targetMinutes;
+        lastDepartMinute = targetMinutes;
+        this->ui->statusLabel->setText("目前停留在：" + QString("%1").arg(cities[cityIndex]));
+        qDebug()<<"目前停留在：" + QString("%1").arg(cities[cityIndex]);
+        if(pathEndMinutes.size()>0)
+            targetMinutes2 = pathEndMinutes.dequeue();
+    }
+
     if(currentMinute == targetMinutes)  //到达新的path
     {
         onPath = true;
@@ -313,6 +327,7 @@ void MainWindow::changeTravelStatus()
         currentPeriodMinute = targetMinutes2 - targetMinutes;
         lastDepartMinute = targetMinutes;
         this->ui->statusLabel->setText(QString("%1").arg(pathes[pathIndex-1]));
+        qDebug()<<pathes[pathIndex-1];    //旅客状态变化写入日志文件
         if(pathStartMinutes.size()>0)
             targetMinutes = pathStartMinutes.dequeue();
 
@@ -320,23 +335,10 @@ void MainWindow::changeTravelStatus()
         alreadyCostMoney+=moneyOfPath[pathIndex-1];
     }
 
-    if(currentMinute == targetMinutes2)  //到达一个城市
-    {
-        onPath = false;
-        //qDebug()<<"currentMinute"<<currentMinute;
-        cityIndex++;
-        //qDebug()<<"city"<<cities;
-        currentPeriodMinute = targetMinutes2 - targetMinutes;
-        lastDepartMinute = targetMinutes;
-        this->ui->statusLabel->setText("目前停留在：" + QString("%1").arg(cities[cityIndex]));
-        if(pathEndMinutes.size()>0)
-            targetMinutes2 = pathEndMinutes.dequeue();
-    }
-
     if(currentMinute == totalMinutes)  //模拟完成
     {
         ptimer->stop();
-        //qDebug()<<"--模拟旅行结束";
+        qDebug()<<"模拟旅行结束";
         onPath = false;
         alreadyStart = false;
         ui->planButton->setEnabled(true);
@@ -366,7 +368,7 @@ void MainWindow::on_pauseButton_clicked()
 {
 
     ptimer->stop();
-    //qDebug()<<"--暂停模拟旅行";
+    qDebug()<<"暂停模拟旅行";
     this->ui->changePlanButton->setEnabled(true);
     this->ui->pauseButton->setEnabled(false);
     this->ui->simButton->setEnabled(true);
